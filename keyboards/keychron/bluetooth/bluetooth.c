@@ -295,48 +295,20 @@ void bluetooth_send_keyboard(report_keyboard_t *report) {
     if (bt_state == BLUETOOTH_PARING && !pincodeEntry) return;
 
     if (bt_state == BLUETOOTH_CONNECTED || (bt_state == BLUETOOTH_PARING && pincodeEntry)) {
-#if defined(NKRO_ENABLE)
-        if (bluetooth_report_protocol && keymap_config.nkro) {
-            if (bluetooth_transport.send_nkro) {
-#    ifndef DISABLE_REPORT_BUFFER
-                bool firstBuffer = false;
-                if (report_buffer_is_empty() && report_buffer_next_inverval() && report_buffer_get_retry() == 0) {
-                    firstBuffer = true;
-                }
-
-                report_buffer_t report_buffer;
-                report_buffer.type = REPORT_TYPE_NKRO;
-                memcpy(&report_buffer.nkro, report, sizeof(report_nkro_t));
-                report_buffer_enqueue(&report_buffer);
-
-                if (firstBuffer) {
-                    report_buffer_set_retry(0);
-                    report_buffer_task();
-                }
-#    else
-                bluetooth_transport.send_nkro(&report->nkro.mods);
-#    endif
-            }
-        } else
-#endif
-        {
-            // #ifdef KEYBOARD_SHARED_EP
-            if (bluetooth_transport.send_keyboard) {
+        if (bluetooth_transport.send_keyboard) {
 #ifndef DISABLE_REPORT_BUFFER
-                if (report_buffer_is_empty() && report_buffer_next_inverval()) {
-                    bluetooth_transport.send_keyboard(&report->mods);
-                    report_buffer_update_timer();
-                } else {
-                    report_buffer_t report_buffer;
-                    report_buffer.type = REPORT_TYPE_KB;
-                    memcpy(&report_buffer.keyboard, report, sizeof(report_keyboard_t));
-                    report_buffer_enqueue(&report_buffer);
-                }
-#else
+            if (report_buffer_is_empty() && report_buffer_next_inverval()) {
                 bluetooth_transport.send_keyboard(&report->mods);
-#endif
+                report_buffer_update_timer();
+            } else {
+                report_buffer_t report_buffer;
+                report_buffer.type = REPORT_TYPE_KB;
+                memcpy(&report_buffer.keyboard, report, sizeof(report_keyboard_t));
+                report_buffer_enqueue(&report_buffer);
             }
-            // #endif
+#else
+            bluetooth_transport.send_keyboard(&report->mods);
+#endif
         }
 
     } else if (bt_state != BLUETOOTH_RESET) {
@@ -345,7 +317,34 @@ void bluetooth_send_keyboard(report_keyboard_t *report) {
 }
 
 void bluetooth_send_nkro(report_nkro_t *report) {
-    // FIXME implement it from bluetooth_send_keyboard
+#if defined(NKRO_ENABLE)
+    if (bt_state == BLUETOOTH_PARING && !pincodeEntry) return;
+
+    if (bt_state == BLUETOOTH_CONNECTED || (bt_state == BLUETOOTH_PARING && pincodeEntry)) {
+        if (bluetooth_transport.send_nkro) {
+#    ifndef DISABLE_REPORT_BUFFER
+            bool firstBuffer = false;
+            if (report_buffer_is_empty() && report_buffer_next_inverval() && report_buffer_get_retry() == 0) {
+                firstBuffer = true;
+            }
+
+            report_buffer_t report_buffer;
+            report_buffer.type = REPORT_TYPE_NKRO;
+            memcpy(&report_buffer.nkro, report, sizeof(report_nkro_t));
+            report_buffer_enqueue(&report_buffer);
+
+            if (firstBuffer) {
+                report_buffer_set_retry(0);
+                report_buffer_task();
+            }
+#    else
+            bluetooth_transport.send_nkro(&report->nkro.mods);
+#    endif
+        }
+    } else if (bt_state != BLUETOOTH_RESET) {
+        bluetooth_connect();
+    }
+#endif
 }
 
 void bluetooth_send_mouse(report_mouse_t *report) {
