@@ -28,7 +28,7 @@
 #    define LED_MATRIX_TIMEOUT LED_MATRIX_TIMEOUT_INFINITE
 
 /* Allow to shutdown driver to save power */
-#    define LED_MATRIX_DRIVER_SHUTDOWN_ENABLE
+//#    define LED_MATRIX_DRIVER_SHUTDOWN_ENABLE // FIXME
 
 /* Turn off backllit if brightness value is low */
 #    define LED_MATRIX_BRIGHTNESS_TURN_OFF_VAL 48

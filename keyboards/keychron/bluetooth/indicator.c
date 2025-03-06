@@ -35,6 +35,9 @@
 #    include "eeprom.h"
 #endif
 
+#define LED_MATRIX_TIMEOUT_INFINITE (UINT32_MAX)
+#define RGB_MATRIX_TIMEOUT_INFINITE (UINT32_MAX)
+
 #ifdef LED_MATRIX_ENABLE
 #    define DECIDE_TIME(t, duration) (duration == 0 ? LED_MATRIX_TIMEOUT_INFINITE : ((t > duration) ? t : duration))
 #endif
@@ -158,11 +161,11 @@ inline void indicator_disable(void) {
 }
 
 void indicator_set_backlit_timeout(uint32_t time) {
-    LED_DRIVER_DISABLE_TIMEOUT_SET(time);
+    //LED_DRIVER_DISABLE_TIMEOUT_SET(time); // FIXME
 }
 
 static inline void indicator_reset_backlit_time(void) {
-    LED_DRIVER_DISABLE_TIME_RESET();
+    //LED_DRIVER_DISABLE_TIME_RESET(); // FIXME
 }
 
 bool indicator_is_enabled(void) {
