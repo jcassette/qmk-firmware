@@ -21,6 +21,7 @@
 #include "battery.h"
 #include "raw_hid.h"
 #include "report_buffer.h"
+#include "usb_descriptor.h"
 
 #ifndef CKBT51_INT_INPUT_PIN
 #    error "CKBT51_INT_INPUT_PIN is not defined"
