@@ -81,10 +81,10 @@ void lpm_task(void) {
 
     if (get_transport() == TRANSPORT_BLUETOOTH && lpm_time_up && !indicator_is_running()
 #ifdef LED_MATRIX_ENABLE
-        && led_matrix_is_driver_shutdown()
+//        && led_matrix_is_driver_shutdown()
 #endif
 #ifdef RGB_MATRIX_ENABLE
-        && rgb_matrix_is_driver_shutdown()
+//        && rgb_matrix_is_driver_shutdown()
 #endif
         && !lpm_any_matrix_action() && !battery_power_on_sample())
 
