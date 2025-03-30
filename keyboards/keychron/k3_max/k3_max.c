@@ -15,10 +15,10 @@
  */
 
 #include "quantum.h"
+#include "keychron_common.h"
 #include "keychron_task.h"
 #ifdef FACTORY_TEST_ENABLE
 #    include "factory_test.h"
-#    include "keychron_common.h"
 #endif
 #ifdef LK_WIRELESS_ENABLE
 #    include "lkbt51.h"
@@ -78,6 +78,10 @@ bool keychron_task_kb(void) {
 
 #ifdef LK_WIRELESS_ENABLE
 bool lpm_is_kb_idle(void) {
+#   ifdef FACTORY_TEST_ENABLE
     return power_on_indicator_timer == 0 && !factory_reset_indicating();
+#   else
+    return power_on_indicator_timer == 0;
+#   endif
 }
 #endif

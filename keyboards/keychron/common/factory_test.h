@@ -28,6 +28,7 @@ bool factory_test_indicator(void);
 //void process_record_factory_test(uint16_t keycode, keyrecord_t *record);
 bool factory_reset_indicating(void);
 void factory_test_task(void);
+void factory_test_send(uint8_t *payload, uint8_t length);
 void factory_test_rx(uint8_t *data, uint8_t length);
 
 bool process_record_factory_test(uint16_t keycode, keyrecord_t *record);
