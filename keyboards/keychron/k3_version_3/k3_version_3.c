@@ -38,14 +38,15 @@ pin_t bt_led_pins[] = BT_INDICATION_LED_PIN_LIST;
 #endif
 
 bool dip_switch_update_kb(uint8_t index, bool active) {
+    if (!dip_switch_update_user(index, active)) {
+        return false;
+    }
     if (index == 0) {
         default_layer_set(1UL << (active ? 0 : 2));
     }
 #ifdef FACTORY_TEST_ENABLE
     dip_switch_update_factory_test(index, active);
 #endif
-    dip_switch_update_user(index, active);
-
     return true;
 }
 
