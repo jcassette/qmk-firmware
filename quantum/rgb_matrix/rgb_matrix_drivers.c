@@ -124,7 +124,7 @@ const rgb_matrix_driver_t rgb_matrix_driver = {
     .set_color_all = is31fl3746a_set_color_all,
 };
 
-#elif defined(RGB_MATRIX_SNLED27351)
+#elif defined(RGB_MATRIX_SNLED27351) || defined(RGB_MATRIX_SNLED27351_SPI)
 const rgb_matrix_driver_t rgb_matrix_driver = {
     .init          = snled27351_init_drivers,
     .flush         = snled27351_flush,
