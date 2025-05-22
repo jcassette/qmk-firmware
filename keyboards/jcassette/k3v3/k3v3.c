@@ -8,6 +8,8 @@
 
 #define BATTERY_LOW_LED_PIN B12
 
+#define CAPS_LOCK_LED_INDEX 46
+
 void keyboard_post_init_kb(void) {
     gpio_set_pin_input_low(UNUSED_PIN_1);
     gpio_set_pin_input_low(UNUSED_PIN_2);
@@ -16,6 +18,20 @@ void keyboard_post_init_kb(void) {
     gpio_write_pin_low(BATTERY_LOW_LED_PIN);
 
     keyboard_post_init_user();
+}
+
+bool rgb_matrix_indicators_kb(void) {
+    if (!rgb_matrix_indicators_user()) {
+        return false;
+    }
+
+    led_t led_state = host_keyboard_led_state();
+
+    if (led_state.caps_lock) {
+        rgb_matrix_set_color(CAPS_LOCK_LED_INDEX, RGB_WHITE);
+    }
+
+    return true;
 }
 
 #if defined(RGB_MATRIX_ENABLE)
