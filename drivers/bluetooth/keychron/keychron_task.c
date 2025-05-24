@@ -17,7 +17,7 @@
 #include <stdlib.h>
 #include "keychron_task.h"
 #include "quantum.h"
-#include "keychron_common.h"
+// #include "keychron_common.h"
 #ifdef FACTORY_TEST_ENABLE
 #    include "factory_test.h"
 #endif
@@ -79,7 +79,7 @@ void keychron_task(void) {
 #ifdef FACTORY_TEST_ENABLE
     factory_test_task();
 #endif
-    keychron_common_task();
+    // keychron_common_task();
 
     keychron_task_kb();
 }

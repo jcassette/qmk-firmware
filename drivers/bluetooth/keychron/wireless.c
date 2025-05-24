@@ -17,11 +17,11 @@
 #include "quantum.h"
 #include "wireless.h"
 #include "report_buffer.h"
-#include "lpm.h"
-#include "battery.h"
-#include "indicator.h"
+// #include "lpm.h"
+// #include "battery.h"
+// #include "indicator.h"
 #include "transport.h"
-#include "rtc_timer.h"
+// #include "rtc_timer.h"
 #include "keychron_wireless_common.h"
 #include "keychron_task.h"
 
@@ -92,13 +92,13 @@ void wireless_init(void) {
 #ifndef DISABLE_REPORT_BUFFER
     report_buffer_init();
 #endif
-    indicator_init();
+    // indicator_init();
 #ifdef BLUETOOTH_INT_INPUT_PIN
     gpio_set_pin_input_high(BLUETOOTH_INT_INPUT_PIN);
 #endif
 
-    battery_init();
-    lpm_init();
+    // battery_init();
+    // lpm_init();
 #if HAL_USE_RTC
     rtc_timer_init();
 #endif
@@ -116,7 +116,7 @@ void wireless_set_transport(wt_func_t *transport) {
  * Enter pairing with current host index
  */
 void wireless_pairing(void) {
-    if (battery_is_critical_low()) return;
+    // if (battery_is_critical_low()) return;
 
     wireless_pairing_ex(0, NULL);
     wireless_state = WT_PARING;
@@ -127,7 +127,7 @@ void wireless_pairing(void) {
  */
 void wireless_pairing_ex(uint8_t host_idx, void *param) {
     kc_printf("wireless_pairing_ex %d\n\r", host_idx);
-    if (battery_is_critical_low()) return;
+    // if (battery_is_critical_low()) return;
 
     if (wireless_transport.pairing_ex) wireless_transport.pairing_ex(host_idx, param);
     wireless_state = WT_PARING;
@@ -140,11 +140,11 @@ void wireless_pairing_ex(uint8_t host_idx, void *param) {
  */
 void wireless_connect(void) {
     /*  Work around empty report after wakeup, which leads to reconneect/disconnected loop */
-    if (battery_is_critical_low() || timer_read32() == 0) return;
+    // if (battery_is_critical_low() || timer_read32() == 0) return;
 
-    if (wireless_state == WT_RECONNECTING && !indicator_is_running()) {
-        indicator_set(wireless_state, host_index);
-    }
+    // if (wireless_state == WT_RECONNECTING) && !indicator_is_running()) {
+    //     indicator_set(wireless_state, host_index);
+    // }
     wireless_transport.connect_ex(0, 0);
     wireless_state = WT_RECONNECTING;
 }
@@ -154,7 +154,7 @@ void wireless_connect(void) {
  */
 void wireless_connect_ex(uint8_t host_idx, uint16_t timeout) {
     kc_printf("wireless_connect_ex %d\n\r", host_idx);
-    if (battery_is_critical_low()) return;
+    // if (battery_is_critical_low()) return;
 
     if (host_idx != 0) {
         /* Do nothing when trying to connect to current connected host*/
@@ -189,7 +189,7 @@ static void wireless_enter_discoverable(uint8_t host_idx) {
     host_index = host_idx;
 
     wireless_state = WT_PARING;
-    indicator_set(wireless_state, host_idx);
+    // indicator_set(wireless_state, host_idx);
     wireless_enter_discoverable_kb(host_idx);
 }
 
@@ -203,7 +203,7 @@ static void wireless_enter_reconnecting(uint8_t host_idx) {
 
     kc_printf("wireless_reconnecting %d\n\r", host_idx);
     wireless_state = WT_RECONNECTING;
-    indicator_set(wireless_state, host_idx);
+    // indicator_set(wireless_state, host_idx);
     wireless_enter_reconnecting_kb(host_idx);
 }
 
@@ -216,7 +216,7 @@ static void wireless_enter_connected(uint8_t host_idx) {
     kc_printf("wireless_connected %d\n\r", host_idx);
 
     wireless_state = WT_CONNECTED;
-    indicator_set(wireless_state, host_idx);
+    // indicator_set(wireless_state, host_idx);
     host_index = host_idx;
 
     clear_keyboard();
@@ -227,11 +227,11 @@ static void wireless_enter_connected(uint8_t host_idx) {
 #endif
 
     wireless_enter_connected_kb(host_idx);
-    if (battery_is_empty()) {
-        indicator_battery_low_enable(true);
-    }
-    if (wireless_transport.update_bat_level) wireless_transport.update_bat_level(battery_get_percentage());
-    lpm_timer_reset();
+    // if (battery_is_empty()) {
+    //     indicator_battery_low_enable(true);
+    // }
+    // if (wireless_transport.update_bat_level) wireless_transport.update_bat_level(battery_get_percentage());
+    // lpm_timer_reset();
 }
 
 /* Enters disconnected state. Upon entering this state we perform the following actions:
@@ -248,16 +248,16 @@ static void wireless_enter_disconnected(uint8_t host_idx, uint8_t reason) {
 
     wireless_state = WT_DISCONNECTED;
 
-    if (previous_state == WT_CONNECTED) {
-        lpm_timer_reset();
-        indicator_set(WT_SUSPEND, host_idx);
-    } else {
-        indicator_set(wireless_state, host_idx);
-#if defined(RGB_MATRIX) || defined(LED_MATRIX)
-        if (reason && (get_transport() & TRANSPORT_WIRELESS))
-            indicator_set_backlit_timeout(DISCONNECTED_BACKLIGHT_DISABLE_TIMEOUT*1000);
-#endif
-    }
+//     if (previous_state == WT_CONNECTED) {
+//         lpm_timer_reset();
+//         indicator_set(WT_SUSPEND, host_idx);
+//     } else {
+//         indicator_set(wireless_state, host_idx);
+// #if defined(RGB_MATRIX) || defined(LED_MATRIX)
+//         if (reason && (get_transport() & TRANSPORT_WIRELESS))
+//             indicator_set_backlit_timeout(DISCONNECTED_BACKLIGHT_DISABLE_TIMEOUT*1000);
+// #endif
+//     }
 
 #ifndef DISABLE_REPORT_BUFFER
     report_buffer_init();
@@ -265,7 +265,7 @@ static void wireless_enter_disconnected(uint8_t host_idx, uint8_t reason) {
     retry = 0;
     wireless_enter_disconnected_kb(host_idx, reason);
 
-    indicator_battery_low_enable(false);
+    // indicator_battery_low_enable(false);
 }
 
 /* Enter pin code entry state. */
@@ -298,11 +298,11 @@ static void wireless_enter_sleep(void) {
     if (wireless_state == WT_CONNECTED || wireless_state == WT_PARING) {
         wireless_state = WT_SUSPEND;
         kc_printf("WT_SUSPEND\n\r");
-        lpm_timer_reset();
+        // lpm_timer_reset();
 
         wireless_enter_sleep_kb();
-        indicator_set(wireless_state, 0);
-        indicator_battery_low_enable(false);
+        // indicator_set(wireless_state, 0);
+        // indicator_battery_low_enable(false);
     }
 }
 
@@ -331,7 +331,7 @@ uint8_t wreless_keyboard_leds(void) {
 extern keymap_config_t keymap_config;
 
 void wireless_send_keyboard(report_keyboard_t *report) {
-    if (battery_is_critical_low()) return;
+    // if (battery_is_critical_low()) return;
 
     if (wireless_state == WT_PARING && !pincodeEntry) return;
 
@@ -357,7 +357,7 @@ void wireless_send_keyboard(report_keyboard_t *report) {
 }
 
 void wireless_send_nkro(report_nkro_t *report) {
-    if (battery_is_critical_low()) return;
+    // if (battery_is_critical_low()) return;
 
     if (wireless_state == WT_PARING && !pincodeEntry) return;
 
@@ -383,7 +383,7 @@ void wireless_send_nkro(report_nkro_t *report) {
 }
 
 void wireless_send_mouse(report_mouse_t *report) {
-    if (battery_is_critical_low()) return;
+    // if (battery_is_critical_low()) return;
 
     if (wireless_state == WT_CONNECTED) {
         if (wireless_transport.send_mouse) wireless_transport.send_mouse((uint8_t *)report);
@@ -421,7 +421,7 @@ void wireless_send_consumer(uint16_t data) {
 }
 
 void wireless_send_extra(report_extra_t *report) {
-    if (battery_is_critical_low()) return;
+    // if (battery_is_critical_low()) return;
 
     if (report->report_id == REPORT_ID_SYSTEM) {
         wireless_send_system(report->usage);
@@ -431,7 +431,7 @@ void wireless_send_extra(report_extra_t *report) {
 }
 
 void wireless_low_battery_shutdown(void) {
-    indicator_battery_low_enable(false);
+    // indicator_battery_low_enable(false);
 
 
     report_buffer_init();
@@ -508,10 +508,10 @@ void wireless_task(void) {
 #ifndef DISABLE_REPORT_BUFFER
     report_buffer_task();
 #endif
-    indicator_task();
+    // indicator_task();
     keychron_wireless_common_task();
-    battery_task();
-    lpm_task();
+    // battery_task();
+    // lpm_task();
 }
 
 void send_string_task(void) {
@@ -527,13 +527,13 @@ wt_state_t wireless_get_state(void) {
 };
 
 bool process_record_wireless(uint16_t keycode, keyrecord_t *record) {
-    if (get_transport() & TRANSPORT_WIRELESS) {
-        lpm_timer_reset();
+    // if (get_transport() & TRANSPORT_WIRELESS) {
+    //     lpm_timer_reset();
 
-        if (battery_is_empty() && wireless_get_state() == WT_CONNECTED && record->event.pressed) {
-            indicator_battery_low_enable(true);
-        }
-    }
+    //     if (battery_is_empty() && wireless_get_state() == WT_CONNECTED && record->event.pressed) {
+    //         indicator_battery_low_enable(true);
+    //     }
+    // }
 
     if (!process_record_keychron_wireless(keycode, record)) return false;
 

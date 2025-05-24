@@ -16,8 +16,7 @@
 
 #pragma once
 
-#include "stdint.h"
-#include "action.h"
+#include "quantum.h"
 
 bool keychron_task_kb(void);
 bool process_record_keychron_kb(uint16_t keycode, keyrecord_t *record);

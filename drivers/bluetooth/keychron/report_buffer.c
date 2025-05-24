@@ -17,7 +17,7 @@
 #include "quantum.h"
 #include "report_buffer.h"
 #include "wireless.h"
-#include "lpm.h"
+// #include "lpm.h"
 
 /* The report buffer is mainly used to fix key press lost issue of macro
  * when wireless module fifo isn't large enough. The maximun macro
@@ -138,7 +138,7 @@ void report_buffer_task(void) {
 #endif
             if (kb_rpt.type == REPORT_TYPE_CONSUMER && wireless_transport.send_consumer) wireless_transport.send_consumer(kb_rpt.consumer);
             report_timer_buffer = timer_read32();
-            lpm_timer_reset();
+            // lpm_timer_reset();
         }
     }
 }

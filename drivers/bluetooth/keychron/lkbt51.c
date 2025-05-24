@@ -18,12 +18,13 @@
 #include "lkbt51.h"
 #include "wireless.h"
 #include "wireless_event_type.h"
-#include "battery.h"
+// #include "battery.h"
 #include "raw_hid.h"
 #include "report_buffer.h"
 #ifdef FACTORY_TEST_ENABLE
 #    include "factory_test.h"
 #endif
+#include "gpio.h"
 
 #ifndef RAW_EPSIZE
 #    define RAW_EPSIZE 32
@@ -851,9 +852,9 @@ void lkbt51_task(void) {
                 wireless_event_enqueue(event);
             }
 
-            if (evt_mask & LK_EVT_MSK_BATT) {
-                battery_calculate_voltage(true, pbuf[6] << 8 | pbuf[5]);
-            }
+            // if (evt_mask & LK_EVT_MSK_BATT) {
+            //     battery_calculate_voltage(true, pbuf[6] << 8 | pbuf[5]);
+            // }
         }
 
         pbuf = buf;

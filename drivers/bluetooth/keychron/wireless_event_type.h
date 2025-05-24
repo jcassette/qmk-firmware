@@ -16,6 +16,8 @@
 
 #pragma once
 
+#include "quantum.h"
+
 /* Type of an enumeration of the possible wireless events.*/
 typedef enum {
     EVT_NONE = 0,

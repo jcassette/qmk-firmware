@@ -18,15 +18,15 @@
 #ifdef LK_WIRELESS_ENABLE
 #    include "lkbt51.h"
 #    include "wireless.h"
-#    include "indicator.h"
+// #    include "indicator.h"
 #    include "transport.h"
-#    include "battery.h"
-#    include "bat_level_animation.h"
-#    include "lpm.h"
+// #    include "battery.h"
+// #    include "bat_level_animation.h"
+// #    include "lpm.h"
 #    include "keychron_wireless_common.h"
 #    include "keychron_task.h"
 #endif
-#include "keychron_common.h"
+// #include "keychron_common.h"
 
 bool firstDisconnect = true;
 

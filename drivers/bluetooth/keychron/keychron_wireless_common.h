@@ -14,11 +14,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "stdint.h"
 #ifdef VIA_ENABLE
 #    include "via.h"
 #endif
-#include "quantum_keycodes.h"
+#include "quantum.h"
 
 void lkbt51_param_init(void);
 

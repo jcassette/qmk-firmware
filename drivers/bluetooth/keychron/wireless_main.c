@@ -17,7 +17,7 @@
 #include "quantum.h"
 #include "wireless.h"
 #include "transport.h"
-#include "factory_test.h"
+// #include "factory_test.h"
 #include "keychron_task.h"
 
 __attribute__((weak)) void wireless_pre_task(void) {}
