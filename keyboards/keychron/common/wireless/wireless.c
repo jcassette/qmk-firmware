@@ -514,6 +514,21 @@ void wireless_task(void) {
     lpm_task();
 }
 
+__attribute__((weak)) void wireless_pre_task(void) {}
+__attribute__((weak)) void wireless_post_task(void) {}
+
+bool wireless_tasks(void) {
+    wireless_pre_task();
+    wireless_task();
+    wireless_post_task();
+
+    /* usb_remote_wakeup() should be invoked last so that we have chance
+     * to switch to wireless after start-up when usb is not connected
+     */
+    if (get_transport() == TRANSPORT_USB) usb_remote_wakeup();
+    return true;
+}
+
 void send_string_task(void) {
     if ((get_transport() & TRANSPORT_WIRELESS) && wireless_get_state() == WT_CONNECTED) {
         wireless_transport.task();

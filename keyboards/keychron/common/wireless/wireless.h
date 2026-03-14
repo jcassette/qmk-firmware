@@ -92,6 +92,8 @@ void wireless_enter_sleep_kb(void);
 void wireless_task(void);
 void wireless_pre_task(void);
 void wireless_post_task(void);
+bool wireless_tasks(void);
+
 void send_string_task(void);
 
 wt_state_t wireless_get_state(void);

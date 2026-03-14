@@ -12,7 +12,6 @@ SRC += \
      $(WIRELESS_DIR)/report_buffer.c \
      $(WIRELESS_DIR)/lkbt51.c \
      $(WIRELESS_DIR)/indicator.c \
-     $(WIRELESS_DIR)/wireless_main.c \
      $(WIRELESS_DIR)/transport.c \
      $(WIRELESS_DIR)/lpm.c \
      $(WIRELESS_DIR)/battery.c \

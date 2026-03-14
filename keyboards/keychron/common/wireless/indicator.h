@@ -112,3 +112,9 @@ bool indicator_is_running(void);
 void indicator_battery_low_enable(bool enable);
 
 void indicator_task(void);
+
+#if defined(RGB_MATRIX_ENABLE)
+bool rgb_matrix_indicators_bt(void);
+#elif defined(LED_MATRIX_ENABLE)
+bool led_matrix_indicators_bt(void);
+#endif

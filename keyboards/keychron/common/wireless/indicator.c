@@ -147,8 +147,6 @@ static pin_t p24g_led_pin_list[P24G_HOST_DEVICES_COUNT] = P24G_INDICATION_LED_PI
 #    define LED_DRIVER_TIMEOUTED rgb_matrix_timeouted
 #endif
 
-bool LED_INDICATORS_KB(void);
-
 void indicator_init(void) {
     memset(&indicator_config, 0, sizeof(indicator_config));
 
