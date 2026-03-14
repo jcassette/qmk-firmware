@@ -16,6 +16,9 @@
 
 #pragma once
 
+#include "stdbool.h"
+#include "stdint.h"
+
 typedef enum {
     TRANSPORT_NONE,
     TRANSPORT_USB       = 0x01 << 0,

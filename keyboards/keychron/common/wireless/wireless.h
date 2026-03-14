@@ -16,6 +16,8 @@
 
 #pragma once
 
+#include "stdbool.h"
+#include "stdint.h"
 #include "wireless_event_type.h"
 #include "action.h"
 

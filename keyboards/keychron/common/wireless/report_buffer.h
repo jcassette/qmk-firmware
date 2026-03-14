@@ -16,6 +16,8 @@
 
 #pragma once
 
+#include "stdbool.h"
+#include "stdint.h"
 #include "report.h"
 
 /* Default report interval value */

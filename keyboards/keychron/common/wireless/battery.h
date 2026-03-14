@@ -16,6 +16,9 @@
 
 #pragma once
 
+#include "stdbool.h"
+#include "stdint.h"
+
 enum {
     BAT_NOT_CHARGING = 0,
     BAT_CHARGING,
