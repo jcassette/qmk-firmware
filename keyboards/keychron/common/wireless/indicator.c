@@ -24,9 +24,6 @@
 #include "rtc_timer.h"
 #include "keychron_common.h"
 #include "usb_main.h"
-#ifdef FACTORY_TEST_ENABLE
-#    include "factory_test.h"
-#endif
 #include "lpm.h"
 #include "keychron_task.h"
 #if defined(LED_MATRIX_ENABLE) || defined(RGB_MATRIX_ENABLE)
@@ -465,14 +462,7 @@ void indicator_set(wt_state_t state, uint8_t host_index) {
             indicator_config.value = (indicator_config.type == INDICATOR_NONE) ? 0 : host_index;
             indicator_timer_cb((void *)&indicator_config.type);
 #if defined(LED_MATRIX_ENABLE) || defined(RGB_MATRIX_ENABLE)
-#    ifdef FACTORY_TEST_ENABLE
-            if (factory_reset_indicating())
-                indicator_set_backlit_timeout(3000);
-            else
-#    endif
-            {
-                indicator_set_backlit_timeout(1000);
-            }
+            indicator_set_backlit_timeout(1000);
 #endif
 
 #if defined(BT_INDICATION_LED_PIN_LIST)

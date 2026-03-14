@@ -21,9 +21,6 @@
 #include "battery.h"
 #include "raw_hid.h"
 #include "report_buffer.h"
-#ifdef FACTORY_TEST_ENABLE
-#    include "factory_test.h"
-#endif
 
 #ifndef RAW_EPSIZE
 #    define RAW_EPSIZE 32
@@ -715,9 +712,6 @@ static void query_rsp_handler(uint8_t* data, uint8_t len) {
 
     switch (data[1]) {
         case LKBT51_CMD_IO_TEST:
-#ifdef FACTORY_TEST_ENABLE
-            factory_test_send(data, len);
-#endif
             break;
         default:
             break;

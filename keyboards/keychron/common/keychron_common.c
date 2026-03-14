@@ -19,11 +19,6 @@
 #include "raw_hid.h"
 #include "version.h"
 
-#ifdef FACTORY_TEST_ENABLE
-#    include "factory_test.h"
-#    include "keychron_common.h"
-#endif
-
 #ifdef LK_WIRELESS_ENABLE
 #    include "lkbt51.h"
 #endif
@@ -225,11 +220,6 @@ bool kc_raw_hid_rx(uint8_t *data, uint8_t length) {
 #ifdef LK_WIRELESS_ENABLE
         case 0xAA:
             lkbt51_dfu_rx(data, length);
-            break;
-#endif
-#ifdef FACTORY_TEST_ENABLE
-        case 0xAB:
-            factory_test_rx(data, length);
             break;
 #endif
         default:
