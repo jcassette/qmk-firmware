@@ -15,6 +15,7 @@
  */
 
 #include "hal.h"
+#include "timer.h"
 
 #if (HAL_USE_RTC)
 

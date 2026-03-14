@@ -22,7 +22,6 @@
 #include "lpm.h"
 #include "indicator.h"
 #include "rtc_timer.h"
-#include "analog.h"
 
 #define BATTERY_EMPTY_COUNT 10
 #define CRITICAL_LOW_COUNT 20

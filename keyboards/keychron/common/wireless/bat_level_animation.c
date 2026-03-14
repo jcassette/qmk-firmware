@@ -1,6 +1,5 @@
 
 #include "quantum.h"
-#include "wireless.h"
 #include "indicator.h"
 #include "lpm.h"
 #if defined(PROTOCOL_CHIBIOS)
@@ -8,7 +7,6 @@
 #elif if defined(PROTOCOL_LUFA)
 #    include "lufa.h"
 #endif
-#include "eeprom.h"
 
 #if (defined(LED_MATRIX_ENABLE) || defined(RGB_MATRIX_ENABLE)) && defined(BAT_LEVEL_LED_LIST)
 

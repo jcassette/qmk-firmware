@@ -14,7 +14,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <stdlib.h>
 #include "keychron_task.h"
 #include "indicator.h"
 #include "quantum.h"

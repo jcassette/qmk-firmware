@@ -16,7 +16,6 @@
 
 #pragma once
 
-#include "timer.h"
 #include <stdint.h>
 
 #define RTC_MAX_TIME (24 * 3600 * 1000) // Set to 1 day

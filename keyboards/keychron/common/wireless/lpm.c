@@ -33,7 +33,6 @@
 #include "transport.h"
 #include "battery.h"
 #include "report_buffer.h"
-#include "keychron_common.h"
 
 extern matrix_row_t matrix[MATRIX_ROWS];
 extern wt_func_t    wireless_transport;

@@ -15,14 +15,12 @@
  */
 
 #include "quantum.h"
-#include "keychron_common.h"
+#include "config.h"
 #include "keychron_task.h"
 #ifdef LK_WIRELESS_ENABLE
 #    include "lkbt51.h"
 #    include "wireless.h"
-#    include "transport.h"
 #    include "keychron_wireless_common.h"
-#    include "battery.h"
 #endif
 
 #define POWER_ON_LED_DURATION 3000

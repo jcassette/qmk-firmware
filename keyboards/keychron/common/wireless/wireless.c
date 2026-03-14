@@ -23,7 +23,6 @@
 #include "transport.h"
 #include "rtc_timer.h"
 #include "keychron_wireless_common.h"
-#include "keychron_task.h"
 
 extern uint8_t         pairing_indication;
 extern host_driver_t   chibios_driver;

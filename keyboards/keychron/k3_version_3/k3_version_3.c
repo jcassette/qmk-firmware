@@ -15,17 +15,13 @@
  */
 
 #include "quantum.h"
-#include "keychron_common.h"
+#include "config.h"
 #include "keychron_task.h"
 #ifdef LK_WIRELESS_ENABLE
 #    include "lkbt51.h"
 #    include "wireless.h"
-#    include "transport.h"
 #    include "keychron_wireless_common.h"
-#    include "battery.h"
 #endif
-
-#include "print.h"
 
 #define POWER_ON_LED_DURATION 3000
 static uint32_t power_on_indicator_timer;
