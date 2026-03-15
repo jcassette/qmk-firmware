@@ -125,6 +125,12 @@ enum rgb_matrix_effects {
 #include "rgb_matrix_effects.inc"
 #undef RGB_MATRIX_EFFECT
 
+#ifdef COMMUNITY_MODULES_ENABLE
+#    define RGB_MATRIX_EFFECT(name, ...) RGB_MATRIX_COMMUNITY_MODULE_##name,
+#    include "rgb_matrix_community_modules.inc"
+#    undef RGB_MATRIX_EFFECT
+#endif
+
 #if defined(RGB_MATRIX_CUSTOM_KB) || defined(RGB_MATRIX_CUSTOM_USER)
 #    define RGB_MATRIX_EFFECT(name, ...) RGB_MATRIX_CUSTOM_##name,
 #    ifdef RGB_MATRIX_CUSTOM_KB
@@ -142,7 +148,7 @@ enum rgb_matrix_effects {
 };
 
 void eeconfig_update_rgb_matrix_default(void);
-void eeconfig_update_rgb_matrix(void);
+void eeconfig_force_flush_rgb_matrix(void);
 
 uint8_t rgb_matrix_map_row_column_to_led_kb(uint8_t row, uint8_t column, uint8_t *led_i);
 uint8_t rgb_matrix_map_row_column_to_led(uint8_t row, uint8_t column, uint8_t *led_i);
@@ -217,14 +223,15 @@ void        rgb_matrix_decrease_speed_noeeprom(void);
 led_flags_t rgb_matrix_get_flags(void);
 void        rgb_matrix_set_flags(led_flags_t flags);
 void        rgb_matrix_set_flags_noeeprom(led_flags_t flags);
-#ifdef RGB_MATRIX_TIMEOUT
 
+#ifdef RGB_MATRIX_TIMEOUT
 #    if RGB_MATRIX_TIMEOUT > 0
 void rgb_matrix_disable_timeout_set(uint32_t timeout);
 void rgb_matrix_disable_time_reset(void);
 bool rgb_matrix_timeouted(void);
 #    endif
 #endif
+
 #ifdef RGB_MATRIX_DRIVER_SHUTDOWN_ENABLE
 void rgb_matrix_driver_shutdown(void);
 void rgb_matrix_driver_exit_shutdown(void);
@@ -232,8 +239,12 @@ bool rgb_matrix_is_driver_shutdown(void);
 bool rgb_matrix_driver_allow_shutdown(void);
 #endif
 
+#ifdef RGB_MATRIX_MODE_NAME_ENABLE
+const char *rgb_matrix_get_mode_name(uint8_t mode);
+#endif // RGB_MATRIX_MODE_NAME_ENABLE
+
 #ifndef RGBLIGHT_ENABLE
-#    define eeconfig_update_rgblight_current eeconfig_update_rgb_matrix
+#    define eeconfig_update_rgblight_current eeconfig_force_flush_rgb_matrix
 #    define rgblight_reload_from_eeprom rgb_matrix_reload_from_eeprom
 #    define rgblight_toggle rgb_matrix_toggle
 #    define rgblight_toggle_noeeprom rgb_matrix_toggle_noeeprom
