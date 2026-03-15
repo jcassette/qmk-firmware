@@ -279,7 +279,7 @@ static void wireless_enter_bluetooth_pin_code_entry(void) {
 /* Exit pin code entry state. */
 static void wireless_exit_bluetooth_pin_code_entry(void) {
 #if defined(NKRO_ENABLE) || defined(WIRELESS_NKRO_ENABLE)
-    keymap_config.raw = eeconfig_read_keymap();
+    eeconfig_read_keymap(&keymap_config);
 #endif
     pincodeEntry = false;
     wireless_exit_bluetooth_pin_code_entry_kb();

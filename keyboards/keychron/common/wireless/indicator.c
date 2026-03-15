@@ -103,7 +103,7 @@ static pin_t p24g_led_pin_list[P24G_HOST_DEVICES_COUNT] = P24G_INDICATION_LED_PI
 #    define SET_LED_LOW_BAT(idx) led_matrix_set_value(idx, 255)
 #    define LED_DRIVER_IS_ENABLED led_matrix_is_enabled
 #    define LED_DRIVER_EECONFIG_RELOAD()                                                           \
-        eeprom_read_block(&led_matrix_eeconfig, EECONFIG_LED_MATRIX, sizeof(led_matrix_eeconfig)); \
+        eeconfig_read_led_matrix(&led_matrix_eeconfig);                                            \
         if (!led_matrix_eeconfig.mode) {                                                           \
             eeconfig_update_led_matrix_default();                                                  \
         }
@@ -130,7 +130,7 @@ static pin_t p24g_led_pin_list[P24G_HOST_DEVICES_COUNT] = P24G_INDICATION_LED_PI
 #    define SET_LED_LOW_BAT(idx) rgb_matrix_set_color(idx, 255, 0, 0)
 #    define LED_DRIVER_IS_ENABLED rgb_matrix_is_enabled
 #    define LED_DRIVER_EECONFIG_RELOAD()                                                       \
-        eeprom_read_block(&rgb_matrix_config, EECONFIG_RGB_MATRIX, sizeof(rgb_matrix_config)); \
+        eeconfig_read_rgb_matrix(&rgb_matrix_config);                                          \
         if (!rgb_matrix_config.mode) {                                                         \
             eeconfig_update_rgb_matrix_default();                                              \
         }
