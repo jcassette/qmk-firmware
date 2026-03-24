@@ -190,7 +190,6 @@ static void wireless_enter_discoverable(uint8_t host_idx) {
 
     wireless_state = WT_PARING;
     indicator_set(wireless_state, host_idx);
-    wireless_enter_discoverable_kb(host_idx);
 }
 
 /*
@@ -204,7 +203,6 @@ static void wireless_enter_reconnecting(uint8_t host_idx) {
     kc_printf("wireless_reconnecting %d\n", host_idx);
     wireless_state = WT_RECONNECTING;
     indicator_set(wireless_state, host_idx);
-    wireless_enter_reconnecting_kb(host_idx);
 }
 
 /* Enters connected state. Upon entering this state we perform the following actions:
@@ -226,7 +224,6 @@ static void wireless_enter_connected(uint8_t host_idx) {
     keymap_config.nkro = false;
 #endif
 
-    wireless_enter_connected_kb(host_idx);
     if (battery_is_empty()) {
         indicator_battery_low_enable(true);
     }
@@ -274,7 +271,6 @@ static void wireless_enter_bluetooth_pin_code_entry(void) {
     keymap_config.nkro = FALSE;
 #endif
     pincodeEntry = true;
-    wireless_enter_bluetooth_pin_code_entry_kb();
 }
 
 /* Exit pin code entry state. */
@@ -283,7 +279,6 @@ static void wireless_exit_bluetooth_pin_code_entry(void) {
     eeconfig_read_keymap(&keymap_config);
 #endif
     pincodeEntry = false;
-    wireless_exit_bluetooth_pin_code_entry_kb();
 }
 
 /* Enters disconnected state. Upon entering this state we perform the following actions:
@@ -300,20 +295,10 @@ static void wireless_enter_sleep(void) {
         kc_printf("WT_SUSPEND\n");
         lpm_timer_reset();
 
-        wireless_enter_sleep_kb();
         indicator_set(wireless_state, 0);
         indicator_battery_low_enable(false);
     }
 }
-
-__attribute__((weak)) void wireless_enter_reset_kb(uint8_t reason) {}
-__attribute__((weak)) void wireless_enter_discoverable_kb(uint8_t host_idx) {}
-__attribute__((weak)) void wireless_enter_reconnecting_kb(uint8_t host_idx) {}
-__attribute__((weak)) void wireless_enter_connected_kb(uint8_t host_idx) {}
-__attribute__((weak)) void wireless_enter_disconnected_kb(uint8_t host_idx, uint8_t reason) {}
-__attribute__((weak)) void wireless_enter_bluetooth_pin_code_entry_kb(void) {}
-__attribute__((weak)) void wireless_exit_bluetooth_pin_code_entry_kb(void) {}
-__attribute__((weak)) void wireless_enter_sleep_kb(void) {}
 
 /*  */
 static void wireless_hid_set_protocol(bool report_protocol) {
