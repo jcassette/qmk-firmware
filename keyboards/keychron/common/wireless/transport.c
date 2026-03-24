@@ -56,7 +56,7 @@ __attribute__((weak)) void bt_transport_enable(bool enable) {
 
         uint32_t t = timer_read32();
         while (timer_elapsed32(t) < 100) {
-            wireless_transport.task();
+            lkbt51_task();
         }
         // wireless_connect();
         wireless_connect_ex(30, 0);
@@ -84,7 +84,7 @@ __attribute__((weak)) void p24g_transport_enable(bool enable) {
 
         uint32_t t = timer_read32();
         while (timer_elapsed32(t) < 100) {
-            wireless_transport.task();
+            lkbt51_task();
         }
         wireless_connect_ex(P24G_INDEX, 0);
         // wireless_connect();

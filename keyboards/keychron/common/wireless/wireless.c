@@ -16,6 +16,7 @@
 
 #include "quantum.h"
 #include "wireless.h"
+#include "lkbt51.h"
 #include "report_buffer.h"
 #include "lpm.h"
 #include "battery.h"
@@ -128,7 +129,7 @@ void wireless_pairing_ex(uint8_t host_idx, void *param) {
     kc_printf("wireless_pairing_ex %d\n", host_idx);
     if (battery_is_critical_low()) return;
 
-    if (wireless_transport.pairing_ex) wireless_transport.pairing_ex(host_idx, param);
+    lkbt51_become_discoverable(host_idx, param);
     wireless_state = WT_PARING;
 
     host_index = host_idx;
@@ -144,7 +145,7 @@ void wireless_connect(void) {
     if (wireless_state == WT_RECONNECTING && !indicator_is_running()) {
         indicator_set(wireless_state, host_index);
     }
-    wireless_transport.connect_ex(0, 0);
+    lkbt51_connect(0, 0);
     wireless_state = WT_RECONNECTING;
 }
 
@@ -162,14 +163,14 @@ void wireless_connect_ex(uint8_t host_idx, uint16_t timeout) {
         host_index = host_idx;
         led_state  = 0;
     }
-    wireless_transport.connect_ex(host_idx, timeout);
+    lkbt51_connect(host_idx, timeout);
     wireless_state = WT_RECONNECTING;
 }
 
 /* Initiate a disconnection */
 void wireless_disconnect(void) {
     kc_printf("wireless_disconnect\n");
-    if (wireless_transport.disconnect) wireless_transport.disconnect();
+    lkbt51_disconnect();
 }
 
 /* Called when the BT device is reset. */
@@ -229,7 +230,7 @@ static void wireless_enter_connected(uint8_t host_idx) {
     if (battery_is_empty()) {
         indicator_battery_low_enable(true);
     }
-    if (wireless_transport.update_bat_level) wireless_transport.update_bat_level(battery_get_percentage());
+    lkbt51_update_bat_lvl(battery_get_percentage());
     lpm_timer_reset();
 }
 
@@ -335,7 +336,7 @@ void wireless_send_keyboard(report_keyboard_t *report) {
     if (wireless_state == WT_PARING && !pincodeEntry) return;
 
     if (wireless_state == WT_CONNECTED || (wireless_state == WT_PARING && pincodeEntry)) {
-        if (wireless_transport.send_keyboard) {
+        if (true) {
 #ifndef DISABLE_REPORT_BUFFER
             bool empty = report_buffer_is_empty();
 
@@ -347,7 +348,7 @@ void wireless_send_keyboard(report_keyboard_t *report) {
             if (empty)
                 report_buffer_task();
 #else
-            wireless_transport.send_keyboard(&report->mods);
+            lkbt51_send_keyboard(&report->mods);
 #endif
         }
     } else if (wireless_state != WT_RESET) {
@@ -361,7 +362,7 @@ void wireless_send_nkro(report_nkro_t *report) {
     if (wireless_state == WT_PARING && !pincodeEntry) return;
 
     if (wireless_state == WT_CONNECTED || (wireless_state == WT_PARING && pincodeEntry)) {
-        if (wireless_transport.send_nkro) {
+        if (true) {
 #ifndef DISABLE_REPORT_BUFFER
             bool empty = report_buffer_is_empty();
 
@@ -373,7 +374,7 @@ void wireless_send_nkro(report_nkro_t *report) {
             if (empty)
                 report_buffer_task();
 #else
-            wireless_transport.send_nkro(&report->mods);
+            lkbt51_send_nkro(&report->mods);
 #endif
         }
     } else if (wireless_state != WT_RESET) {
@@ -385,7 +386,7 @@ void wireless_send_mouse(report_mouse_t *report) {
     if (battery_is_critical_low()) return;
 
     if (wireless_state == WT_CONNECTED) {
-        if (wireless_transport.send_mouse) wireless_transport.send_mouse((uint8_t *)report);
+        lkbt51_send_mouse((uint8_t *)report);
     } else if (wireless_state != WT_RESET) {
         wireless_connect();
     }
@@ -393,7 +394,7 @@ void wireless_send_mouse(report_mouse_t *report) {
 
 void wireless_send_system(uint16_t data) {
     if (wireless_state == WT_CONNECTED) {
-        if (wireless_transport.send_system) wireless_transport.send_system(data);
+        lkbt51_send_system(data);
     } else if (wireless_state != WT_RESET) {
         wireless_connect();
     }
@@ -403,7 +404,7 @@ void wireless_send_consumer(uint16_t data) {
     if (wireless_state == WT_CONNECTED) {
 #ifndef DISABLE_REPORT_BUFFER
         if (report_buffer_is_empty() && report_buffer_next_inverval()) {
-            if (wireless_transport.send_consumer) wireless_transport.send_consumer(data);
+            lkbt51_send_consumer(data);
             report_buffer_update_timer();
         } else {
             report_buffer_t report_buffer;
@@ -412,7 +413,7 @@ void wireless_send_consumer(uint16_t data) {
             report_buffer_enqueue(&report_buffer);
         }
 #else
-        if (wireless_transport.send_consumer) wireless_transport.send_consumer(data);
+        lkbt51_send_consumer(data);
 #endif
     } else if (wireless_state != WT_RESET) {
         wireless_connect();
@@ -441,18 +442,18 @@ void wireless_low_battery_shutdown(void) {
     if (keymap_config.nkro) {
         report_nkro_t empty_nkro_report;
         memset(&empty_nkro_report, 0, sizeof(empty_nkro_report));
-        wireless_transport.send_nkro(&empty_nkro_report.mods);
+        lkbt51_send_nkro(&empty_nkro_report.mods);
     } else {
         report_keyboard_t empty_report;
         memset(&empty_report, 0, sizeof(empty_report));
-        wireless_transport.send_keyboard(&empty_report.mods);
+        lkbt51_send_keyboard(&empty_report.mods);
     }
     wait_ms(10);
-    wireless_transport.send_consumer(0);
+    lkbt51_send_consumer(0);
     wait_ms(10);
     report_mouse_t empty_mouse_report;
     memset(&empty_mouse_report, 0, sizeof(empty_mouse_report));
-    wireless_transport.send_mouse((uint8_t *)&empty_mouse_report);
+    lkbt51_send_mouse((uint8_t *)&empty_mouse_report);
     wait_ms(300); // Wait for bt module to send all buffered report
 
     wireless_disconnect();
@@ -502,7 +503,7 @@ void wireless_event_task(void) {
 }
 
 void wireless_task(void) {
-    wireless_transport.task();
+    lkbt51_task();
     wireless_event_task();
 #ifndef DISABLE_REPORT_BUFFER
     report_buffer_task();
@@ -530,7 +531,7 @@ bool wireless_tasks(void) {
 
 void send_string_task(void) {
     if ((get_transport() & TRANSPORT_WIRELESS) && wireless_get_state() == WT_CONNECTED) {
-        wireless_transport.task();
+        lkbt51_task();
 #ifndef DISABLE_REPORT_BUFFER
         report_buffer_task();
 #endif

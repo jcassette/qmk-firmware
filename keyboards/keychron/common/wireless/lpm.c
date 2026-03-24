@@ -28,6 +28,7 @@
 #endif
 #include "debounce.h"
 #include "wireless.h"
+#include "lkbt51.h"
 #include "indicator.h"
 #include "lpm.h"
 #include "transport.h"
@@ -204,7 +205,7 @@ __attribute__((weak)) void lpm_wakeup(void) {
     encoder_cb_init();
 #endif
 
-    if (wireless_transport.init) wireless_transport.init(true);
+    lkbt51_init(true);
     battery_init();
 
     palDisableLineEvent(LKBT51_INT_INPUT_PIN);

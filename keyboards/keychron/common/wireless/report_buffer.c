@@ -17,6 +17,7 @@
 #include "quantum.h"
 #include "report_buffer.h"
 #include "wireless.h"
+#include "lkbt51.h"
 #include "lpm.h"
 
 /* The report buffer is mainly used to fix key press lost issue of macro
@@ -129,14 +130,14 @@ void report_buffer_task(void) {
 
         if (pending_data) {
 #if defined(NKRO_ENABLE) && defined(WIRELESS_NKRO_ENABLE)
-            if (kb_rpt.type == REPORT_TYPE_NKRO && wireless_transport.send_nkro) {
-                wireless_transport.send_nkro(&kb_rpt.nkro.mods);
-            } else if (kb_rpt.type == REPORT_TYPE_KB && wireless_transport.send_keyboard)
-                wireless_transport.send_keyboard(&kb_rpt.keyboard.mods);
+            if (kb_rpt.type == REPORT_TYPE_NKRO) {
+                lkbt51_send_nkro(&kb_rpt.nkro.mods);
+            } else if (kb_rpt.type == REPORT_TYPE_KB)
+                lkbt51_send_keyboard(&kb_rpt.keyboard.mods);
 #else
-            if (kb_rpt.type == REPORT_TYPE_KB && wireless_transport.send_keyboard) wireless_transport.send_keyboard(&kb_rpt.keyboard.mods);
+            if (kb_rpt.type == REPORT_TYPE_KB) lkbt51_send_keyboard(&kb_rpt.keyboard.mods);
 #endif
-            if (kb_rpt.type == REPORT_TYPE_CONSUMER && wireless_transport.send_consumer) wireless_transport.send_consumer(kb_rpt.consumer);
+            if (kb_rpt.type == REPORT_TYPE_CONSUMER) lkbt51_send_consumer(kb_rpt.consumer);
             report_timer_buffer = timer_read32();
             lpm_timer_reset();
         }
