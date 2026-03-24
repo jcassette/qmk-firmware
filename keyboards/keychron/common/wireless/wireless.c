@@ -125,7 +125,7 @@ void wireless_pairing(void) {
  * Enter pairing with specified host index and param
  */
 void wireless_pairing_ex(uint8_t host_idx, void *param) {
-    kc_printf("wireless_pairing_ex %d\n\r", host_idx);
+    kc_printf("wireless_pairing_ex %d\n", host_idx);
     if (battery_is_critical_low()) return;
 
     if (wireless_transport.pairing_ex) wireless_transport.pairing_ex(host_idx, param);
@@ -152,7 +152,7 @@ void wireless_connect(void) {
  * Initiate connection request to paired host with argument
  */
 void wireless_connect_ex(uint8_t host_idx, uint16_t timeout) {
-    kc_printf("wireless_connect_ex %d\n\r", host_idx);
+    kc_printf("wireless_connect_ex %d\n", host_idx);
     if (battery_is_critical_low()) return;
 
     if (host_idx != 0) {
@@ -168,13 +168,13 @@ void wireless_connect_ex(uint8_t host_idx, uint16_t timeout) {
 
 /* Initiate a disconnection */
 void wireless_disconnect(void) {
-    kc_printf("wireless_disconnect\n\r");
+    kc_printf("wireless_disconnect\n");
     if (wireless_transport.disconnect) wireless_transport.disconnect();
 }
 
 /* Called when the BT device is reset. */
 static void wireless_enter_reset(uint8_t reason) {
-    kc_printf("wireless_enter_reset\n\r");
+    kc_printf("wireless_enter_reset\n");
     wireless_state = WT_RESET;
     wireless_enter_reset_kb(reason);
 }
@@ -184,7 +184,7 @@ static void wireless_enter_reset(uint8_t reason) {
  *   - set pairing indication
  */
 static void wireless_enter_discoverable(uint8_t host_idx) {
-    kc_printf("wireless_enter_discoverable: %d\n\r", host_idx);
+    kc_printf("wireless_enter_discoverable: %d\n", host_idx);
     host_index = host_idx;
 
     wireless_state = WT_PARING;
@@ -200,7 +200,7 @@ static void wireless_enter_discoverable(uint8_t host_idx) {
 static void wireless_enter_reconnecting(uint8_t host_idx) {
     host_index = host_idx;
 
-    kc_printf("wireless_reconnecting %d\n\r", host_idx);
+    kc_printf("wireless_reconnecting %d\n", host_idx);
     wireless_state = WT_RECONNECTING;
     indicator_set(wireless_state, host_idx);
     wireless_enter_reconnecting_kb(host_idx);
@@ -212,7 +212,7 @@ static void wireless_enter_reconnecting(uint8_t host_idx) {
  *   - enable NKRO if it is support
  */
 static void wireless_enter_connected(uint8_t host_idx) {
-    kc_printf("wireless_connected %d\n\r", host_idx);
+    kc_printf("wireless_connected %d\n", host_idx);
 
     wireless_state = WT_CONNECTED;
     indicator_set(wireless_state, host_idx);
@@ -238,7 +238,7 @@ static void wireless_enter_connected(uint8_t host_idx) {
  *   - set disconnected indication
  */
 static void wireless_enter_disconnected(uint8_t host_idx, uint8_t reason) {
-    kc_printf("wireless_disconnected %d, %d\n\r", host_idx, reason);
+    kc_printf("wireless_disconnected %d, %d\n", host_idx, reason);
 
     uint8_t previous_state = wireless_state;
     led_state              = 0;
@@ -290,13 +290,13 @@ static void wireless_exit_bluetooth_pin_code_entry(void) {
  *   - set disconnected indication
  */
 static void wireless_enter_sleep(void) {
-    kc_printf("wireless_enter_sleep %d\n\r", wireless_state);
+    kc_printf("wireless_enter_sleep %d\n", wireless_state);
 
     led_state = 0;
 
     if (wireless_state == WT_CONNECTED || wireless_state == WT_PARING) {
         wireless_state = WT_SUSPEND;
-        kc_printf("WT_SUSPEND\n\r");
+        kc_printf("WT_SUSPEND\n");
         lpm_timer_reset();
 
         wireless_enter_sleep_kb();

@@ -723,6 +723,7 @@ static void lkbt51_event_handler(uint8_t evt_type, uint8_t* data, uint8_t len, u
 
     switch (evt_type) {
         case LKBT51_EVT_ACK:
+            kc_printf("LKBT51_EVT_ACK %02X %02X\n", data[1], data[2]);
             ack_handler(data, len);
             break;
         case LKBT51_EVT_RESET:
@@ -737,12 +738,12 @@ static void lkbt51_event_handler(uint8_t evt_type, uint8_t* data, uint8_t len, u
             kc_printf("LKBT51_EVT_HOST_TYPE\n");
             break;
         case LKBT51_EVT_HID_EVENT:
-            kc_printf("LKBT51_EVT_HID_EVENT\n");
+            kc_printf("LKBT51_EVT_HID_EVENT %02X\n", data[0]);
             event.evt_type   = EVT_HID_INDICATOR;
             event.params.led = data[0];
             break;
         case LKBT51_EVT_QUERY_RSP:
-            kc_printf("LKBT51_EVT_QUERY_RSP\n\r");
+            kc_printf("LKBT51_EVT_QUERY_RSP\n");
             query_rsp_handler(data, len);
             break;
         case LKBT51_EVT_OTA_RSP:
@@ -775,13 +776,14 @@ void lkbt51_task(void) {
 
         if (pbuf[0] == 0xAA && pbuf[1] == 0x54 && pbuf[4] == (uint8_t)(~0x54) && pbuf[5] == (uint8_t)(~0xAA)) {
             uint16_t protol_ver = pbuf[3] << 8 | pbuf[2];
-            kc_printf("protol_ver: %x\n\r", protol_ver);
+            kc_printf("protol_ver: %x\n", protol_ver);
             (void)protol_ver;
         } else if (pbuf[0] == 0xAA) {
             wireless_event_t event    = {0};
             uint8_t          evt_mask = pbuf[1];
 
             if (evt_mask & LK_EVT_MSK_RESET) {
+                kc_printf("LK_EVT_MSK_RESET %02X\n", pbuf[2]);
                 event.evt_type      = EVT_RESET;
                 event.params.reason = pbuf[2];
                 wireless_event_enqueue(event);
@@ -789,6 +791,7 @@ void lkbt51_task(void) {
 
             if (evt_mask & LK_EVT_MSK_CONNECTION) {
                 lkbt51_send_conn_evt_ack();
+                kc_printf("LK_EVT_MSK_CONNECTION %02X\n", pbuf[2]);
                 switch (pbuf[2]) {
                     case LKBT51_CONNECTED:
                         event.evt_type = EVT_CONNECTED;
@@ -822,6 +825,7 @@ void lkbt51_task(void) {
             }
 
             if (evt_mask & LK_EVT_MSK_LED) {
+                kc_printf("LK_EVT_MSK_LED %02X\n", pbuf[4]);
                 memset(&event, 0, sizeof(event));
                 event.evt_type   = EVT_HID_INDICATOR;
                 event.params.led = pbuf[4];
@@ -829,6 +833,7 @@ void lkbt51_task(void) {
             }
 
             if (evt_mask & LK_EVT_MSK_RPT_INTERVAL) {
+                kc_printf("LK_EVT_MSK_RPT_INTERVAL %02X\n", pbuf[8]);
                 uint32_t interval;
                 if (pbuf[8] & 0x80) {
                     interval = (pbuf[8] & 0x7F) * 1250;
@@ -846,6 +851,7 @@ void lkbt51_task(void) {
             }
 
             if (evt_mask & LK_EVT_MSK_BATT) {
+                kc_printf("LK_EVT_MSK_BATT %02X %02X\n", pbuf[5], pbuf[6]);
                 battery_calculate_voltage(true, pbuf[6] << 8 | pbuf[5]);
             }
         }

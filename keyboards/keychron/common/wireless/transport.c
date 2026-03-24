@@ -190,7 +190,7 @@ static void reinit_led_drvier(void) {
 #endif
 
 void transport_changed(transport_t new_transport) {
-    kc_printf("transport_changed %d\n\r", new_transport);
+    kc_printf("transport_changed %d\n", new_transport);
     indicator_init();
 
 #if (REINIT_LED_DRIVER)

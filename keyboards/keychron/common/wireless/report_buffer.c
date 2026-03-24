@@ -95,7 +95,7 @@ bool report_buffer_next_inverval(void) {
 }
 
 void report_buffer_set_inverval(uint8_t interval) {
-    // OG_TRACE("report_buffer_set_inverval: %d\n\r", interval);
+    kc_printf("report_buffer_set_inverval: %d\n", interval);
     report_interval = interval;
 }
 
