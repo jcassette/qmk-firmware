@@ -187,6 +187,20 @@ const SPIConfig spicfg = {
 };
 #endif
 
+static void ddump(void *data, uint16_t len) {
+#if 0
+    static char const digits[] = "0123456789ABCDEF";
+    if (!debug_config.enable) return;
+    for (uint16_t i = 0; i < len; i++) {
+        uint8_t byte = ((uint8_t *)data)[i];
+        sendchar(' ');
+        sendchar(digits[byte >> 4]);
+        sendchar(digits[byte & 0xF]);
+    }
+    sendchar('\n');
+#endif
+}
+
 void lkbt51_init(bool wakeup_from_low_power_mode) {
 #ifdef LKBT51_RESET_PIN
     if (!wakeup_from_low_power_mode) {
@@ -219,6 +233,8 @@ void lkbt51_init(bool wakeup_from_low_power_mode) {
 }
 
 static inline void lkbt51_wake(void) {
+    kc_printf("%s\n", __func__);
+
     if (timer_elapsed32(wake_time) > 3000) {
         wake_time = timer_read32();
 
@@ -230,6 +246,8 @@ static inline void lkbt51_wake(void) {
 }
 
 void lkbt51_send_protocol_ver(uint16_t ver) {
+    kc_printf("%s\n", __func__);
+
     uint8_t pkt[PACKET_MAX_LEN] = {0};
     memset(pkt, 0, PACKET_MAX_LEN);
 
@@ -257,6 +275,8 @@ void lkbt51_send_protocol_ver(uint16_t ver) {
 }
 
 void lkbt51_send_cmd(uint8_t* payload, uint8_t len, bool ack_enable, bool retry) {
+    kc_printf("%s\n", __func__);
+
     static uint8_t sn = 0;
     uint8_t        i;
     uint8_t        pkt[PACKET_MAX_LEN] = {0};
@@ -290,6 +310,8 @@ void lkbt51_send_cmd(uint8_t* payload, uint8_t len, bool ack_enable, bool retry)
     else
         expect_len = 64;
 
+    ddump(pkt, i);
+
     spiStart(&WT_DRIVER, &spicfg);
     spiSelect(&WT_DRIVER);
     spiSend(&WT_DRIVER, i, pkt);
@@ -299,6 +321,8 @@ void lkbt51_send_cmd(uint8_t* payload, uint8_t len, bool ack_enable, bool retry)
 }
 
 void lkbt51_read(uint8_t* payload, uint8_t len) {
+    kc_printf("%s\n", __func__);
+
     uint8_t i;
     uint8_t pkt[PACKET_MAX_LEN] = {0};
     memset(pkt, 0, PACKET_MAX_LEN);
@@ -318,9 +342,13 @@ void lkbt51_read(uint8_t* payload, uint8_t len) {
     spiUnselect(&WT_DRIVER);
     spiStop(&WT_DRIVER);
 #endif
+
+    ddump(payload, i);
 }
 
 void lkbt51_send_keyboard(uint8_t* report) {
+    kc_printf("%s\n", __func__);
+
     uint8_t i = 0;
     memset(payload, 0, PACKET_MAX_LEN);
 
@@ -332,6 +360,8 @@ void lkbt51_send_keyboard(uint8_t* report) {
 }
 
 void lkbt51_send_nkro(uint8_t* report) {
+    kc_printf("%s\n", __func__);
+
     uint8_t i = 0;
     memset(payload, 0, PACKET_MAX_LEN);
 
@@ -343,6 +373,8 @@ void lkbt51_send_nkro(uint8_t* report) {
 }
 
 void lkbt51_send_consumer(uint16_t report) {
+    kc_printf("%s\n", __func__);
+
     uint8_t i = 0;
     memset(payload, 0, PACKET_MAX_LEN);
 
@@ -355,6 +387,8 @@ void lkbt51_send_consumer(uint16_t report) {
 }
 
 void lkbt51_send_system(uint16_t report) {
+    kc_printf("%s\n", __func__);
+
     uint8_t hid_usage = report & 0xFF;
 
     if (hid_usage < 0x81 || hid_usage > 0x83) return;
@@ -369,6 +403,8 @@ void lkbt51_send_system(uint16_t report) {
 }
 
 void lkbt51_send_mouse(uint8_t* report) {
+    kc_printf("%s\n", __func__);
+
     uint8_t i = 0;
     memset(payload, 0, PACKET_MAX_LEN);
 
@@ -386,6 +422,8 @@ void lkbt51_send_mouse(uint8_t* report) {
 
 /* Send ack to connection event, wireless module will retry 2 times if no ack received */
 void lkbt51_send_conn_evt_ack(void) {
+    kc_printf("%s\n", __func__);
+
     uint8_t i = 0;
     memset(payload, 0, PACKET_MAX_LEN);
 
@@ -395,6 +433,8 @@ void lkbt51_send_conn_evt_ack(void) {
 }
 
 void lkbt51_become_discoverable(uint8_t host_idx, void* param) {
+    kc_printf("%s\n", __func__);
+
     uint8_t i = 0;
     memset(payload, 0, PACKET_MAX_LEN);
 
@@ -423,6 +463,8 @@ void lkbt51_become_discoverable(uint8_t host_idx, void* param) {
 
 /* Timeout : 2 ~ 255 seconds */
 void lkbt51_connect(uint8_t hostIndex, uint16_t timeout) {
+    kc_printf("%s\n", __func__);
+
     uint8_t i = 0;
     memset(payload, 0, PACKET_MAX_LEN);
 
@@ -436,6 +478,8 @@ void lkbt51_connect(uint8_t hostIndex, uint16_t timeout) {
 }
 
 void lkbt51_disconnect(void) {
+    kc_printf("%s\n", __func__);
+
     uint8_t i = 0;
     memset(payload, 0, PACKET_MAX_LEN);
 
@@ -453,6 +497,8 @@ void lkbt51_disconnect(void) {
 }
 
 void lkbt51_switch_host(uint8_t hostIndex) {
+    kc_printf("%s\n", __func__);
+
     uint8_t i = 0;
     memset(payload, 0, PACKET_MAX_LEN);
 
@@ -463,6 +509,8 @@ void lkbt51_switch_host(uint8_t hostIndex) {
 }
 
 void lkbt51_read_state_reg(uint8_t reg, uint8_t len) {
+    kc_printf("%s\n", __func__);
+
     uint8_t i = 0;
     memset(payload, 0, PACKET_MAX_LEN);
 
@@ -475,6 +523,8 @@ void lkbt51_read_state_reg(uint8_t reg, uint8_t len) {
 }
 
 void lkbt51_update_bat_lvl(uint8_t bat_lvl) {
+    kc_printf("%s\n", __func__);
+
     uint8_t i = 0;
     memset(payload, 0, PACKET_MAX_LEN);
 
@@ -484,6 +534,8 @@ void lkbt51_update_bat_lvl(uint8_t bat_lvl) {
 }
 
 void lkbt51_update_bat_state(uint8_t bat_state) {
+    kc_printf("%s\n", __func__);
+
     uint8_t i = 0;
     memset(payload, 0, PACKET_MAX_LEN);
 
@@ -493,6 +545,8 @@ void lkbt51_update_bat_state(uint8_t bat_state) {
 }
 
 void lkbt51_get_info(module_info_t* info) {
+    kc_printf("%s\n", __func__);
+
     uint8_t i = 0;
     memset(payload, 0, PACKET_MAX_LEN);
 
@@ -501,6 +555,8 @@ void lkbt51_get_info(module_info_t* info) {
 }
 
 void lkbt51_set_param(module_param_t* param) {
+    kc_printf("%s\n", __func__);
+
     uint8_t i = 0;
     memset(payload, 0, PACKET_MAX_LEN);
 
@@ -512,6 +568,8 @@ void lkbt51_set_param(module_param_t* param) {
 }
 
 void lkbt51_get_param(module_param_t* param) {
+    kc_printf("%s\n", __func__);
+
     uint8_t i = 0;
     memset(payload, 0, PACKET_MAX_LEN);
 
@@ -521,6 +579,8 @@ void lkbt51_get_param(module_param_t* param) {
 }
 
 void lkbt51_set_local_name(const char* name) {
+    kc_printf("%s\n", __func__);
+
     uint8_t i   = 0;
     uint8_t len = strlen(name);
     memset(payload, 0, PACKET_MAX_LEN);
@@ -532,6 +592,8 @@ void lkbt51_set_local_name(const char* name) {
 }
 
 void lkbt51_get_local_name(void) {
+    kc_printf("%s\n", __func__);
+
     uint8_t i = 0;
     memset(payload, 0, PACKET_MAX_LEN);
 
@@ -541,6 +603,8 @@ void lkbt51_get_local_name(void) {
 }
 
 void lkbt51_factory_reset(uint8_t p2p4g_clr_msk) {
+    kc_printf("%s\n", __func__);
+
     uint8_t i = 0;
     memset(payload, 0, PACKET_MAX_LEN);
 
@@ -553,6 +617,8 @@ void lkbt51_factory_reset(uint8_t p2p4g_clr_msk) {
 }
 
 void lkbt51_int_pin_test(bool enable) {
+    kc_printf("%s\n", __func__);
+
     uint8_t i = 0;
     memset(payload, 0, PACKET_MAX_LEN);
     payload[i++] = LKBT51_CMD_IO_TEST;
@@ -562,6 +628,8 @@ void lkbt51_int_pin_test(bool enable) {
 }
 
 void lkbt51_radio_test(uint8_t channel) {
+    kc_printf("%s\n", __func__);
+
     uint8_t i = 0;
     memset(payload, 0, PACKET_MAX_LEN);
     payload[i++] = LKBT51_CMD_RADIO_TEST;
@@ -572,6 +640,8 @@ void lkbt51_radio_test(uint8_t channel) {
 }
 
 bool lkbt51_read_customize_data(uint8_t* data, uint8_t len) {
+    kc_printf("%s\n", __func__);
+
     uint8_t i;
     uint8_t buf[20] = {0};
 
@@ -595,6 +665,8 @@ bool lkbt51_read_customize_data(uint8_t* data, uint8_t len) {
 }
 
 void lkbt51_write_customize_data(uint8_t* data, uint8_t len) {
+    kc_printf("%s\n", __func__);
+
     uint8_t i;
     uint8_t pkt[PACKET_MAX_LEN] = {0};
 
@@ -621,6 +693,8 @@ void lkbt51_write_customize_data(uint8_t* data, uint8_t len) {
 }
 #ifdef RAW_ENABLE
 void lkbt51_dfu_tx(uint8_t rsp, uint8_t* data, uint8_t len, uint8_t sn) {
+    kc_printf("%s\n", __func__);
+
     uint16_t checksum = 0;
     uint8_t buf[RAW_EPSIZE] = {0};
     uint8_t i               = 0;
@@ -651,6 +725,8 @@ void lkbt51_dfu_tx(uint8_t rsp, uint8_t* data, uint8_t len, uint8_t sn) {
 }
 #endif
 void lkbt51_dfu_rx(uint8_t* data, uint8_t length) {
+    kc_printf("%s\n", __func__);
+
     if (data[0] == 0xAA && (data[1] == 0x55 || data[1] == 0x56) && data[2] == (~data[3] & 0xFF)) {
         uint16_t checksum    = 0;
         uint8_t  payload_len = data[2];
@@ -682,6 +758,8 @@ void lkbt51_dfu_rx(uint8_t* data, uint8_t length) {
 }
 
 static void ack_handler(uint8_t* data, uint8_t len) {
+    kc_printf("%s\n", __func__);
+
     switch (data[1]) {
         case LKBT51_CMD_SEND_KB:
         case LKBT51_CMD_SEND_KB_NKRO:
@@ -708,6 +786,8 @@ static void ack_handler(uint8_t* data, uint8_t len) {
 }
 
 static void query_rsp_handler(uint8_t* data, uint8_t len) {
+    kc_printf("%s\n", __func__);
+
     if (data[2]) return;
 
     switch (data[1]) {
@@ -719,6 +799,8 @@ static void query_rsp_handler(uint8_t* data, uint8_t len) {
 }
 
 static void lkbt51_event_handler(uint8_t evt_type, uint8_t* data, uint8_t len, uint8_t sn) {
+    kc_printf("%s\n", __func__);
+
     wireless_event_t event = {0};
 
     switch (evt_type) {
@@ -794,15 +876,19 @@ void lkbt51_task(void) {
                 kc_printf("LK_EVT_MSK_CONNECTION %02X\n", pbuf[2]);
                 switch (pbuf[2]) {
                     case LKBT51_CONNECTED:
+                        kc_printf("LKBT51_CONNECTED\n");
                         event.evt_type = EVT_CONNECTED;
                         break;
                     case LKBT51_DISCOVERABLE:
+                        kc_printf("LKBT51_DISCOVERABLE\n");
                         event.evt_type = EVT_DISCOVERABLE;
                         break;
                     case LKBT51_RECONNECTING:
+                        kc_printf("LKBT51_RECONNECTING\n");
                         event.evt_type = EVT_RECONNECTING;
                         break;
                     case LKBT51_DISCONNECTED:
+                        kc_printf("LKBT51_DISCONNECTED\n");
                         event.evt_type = EVT_DISCONNECTED;
                         if (factory_reset && timer_elapsed32(factory_reset) < 3000) {
                             factory_reset = 0;
@@ -810,12 +896,15 @@ void lkbt51_task(void) {
                         }
                         break;
                     case LKBT51_PINCODE_ENTRY:
+                        kc_printf("LKBT51_PINCODE_ENTRY\n");
                         event.evt_type = EVT_BT_PINCODE_ENTRY;
                         break;
                     case LKBT51_EXIT_PINCODE_ENTRY:
+                        kc_printf("LKBT51_EXIT_PINCODE_ENTRY\n");
                         event.evt_type = EVT_EXIT_BT_PINCODE_ENTRY;
                         break;
                     case LKBT51_SLEEP:
+                        kc_printf("LKBT51_SLEEP\n");
                         event.evt_type = EVT_SLEEP;
                         break;
                 }

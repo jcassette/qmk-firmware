@@ -76,6 +76,8 @@ bool process_record_keychron_wireless(uint16_t keycode, keyrecord_t *record) {
 }
 
 void lkbt51_param_init(void) {
+    kc_printf("%s\n", __func__);
+
     /* Set bluetooth device name */
     lkbt51_set_local_name(PRODUCT);
     wait_ms(3);
@@ -95,10 +97,14 @@ void lkbt51_param_init(void) {
 }
 
 void wireless_enter_reset_kb(uint8_t reason) {
+    kc_printf("%s\n", __func__);
+
     lkbt51_param_init();
 }
 
 void wireless_enter_disconnected_kb(uint8_t host_idx, uint8_t reason) {
+    kc_printf("%s\n", __func__);
+
     /* CKBT51 bluetooth module boot time is slower, it enters disconnected after boot,
        so we place initialization here. */
     if (firstDisconnect && timer_read32() < 1000) {
