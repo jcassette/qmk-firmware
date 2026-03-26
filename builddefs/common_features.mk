@@ -909,7 +909,7 @@ ifeq ($(strip $(USBPD_ENABLE)), yes)
 endif
 
 BLUETOOTH_ENABLE ?= no
-VALID_BLUETOOTH_DRIVER_TYPES := bluefruit_le custom rn42
+VALID_BLUETOOTH_DRIVER_TYPES := bluefruit_le custom lkbt51 rn42
 ifeq ($(strip $(BLUETOOTH_ENABLE)), yes)
     ifeq ($(filter $(strip $(BLUETOOTH_DRIVER)),$(VALID_BLUETOOTH_DRIVER_TYPES)),)
         $(call CATASTROPHIC_ERROR,Invalid BLUETOOTH_DRIVER,BLUETOOTH_DRIVER="$(BLUETOOTH_DRIVER)" is not a valid Bluetooth driver type)
@@ -925,6 +925,12 @@ ifeq ($(strip $(BLUETOOTH_ENABLE)), yes)
         SPI_DRIVER_REQUIRED = yes
         SRC += $(DRIVER_PATH)/bluetooth/bluetooth_drivers.c
         SRC += $(DRIVER_PATH)/bluetooth/bluefruit_le.cpp
+    endif
+
+    ifeq ($(strip $(BLUETOOTH_DRIVER)), lkbt51)
+        SPI_DRIVER_REQUIRED = yes
+        SRC += $(DRIVER_PATH)/bluetooth/bluetooth_drivers.c
+        SRC += $(DRIVER_PATH)/bluetooth/lkbt51_basic.c
     endif
 
     ifeq ($(strip $(BLUETOOTH_DRIVER)), rn42)

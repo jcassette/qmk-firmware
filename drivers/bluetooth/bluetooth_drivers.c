@@ -19,6 +19,8 @@
 
 #if defined(BLUETOOTH_BLUEFRUIT_LE)
 #    include "bluefruit_le.h"
+#elif defined(BLUETOOTH_LKBT51)
+#    include "lkbt51.h"
 #elif defined(BLUETOOTH_RN42)
 #    include "rn42.h"
 #endif
@@ -26,6 +28,8 @@
 void bluetooth_init(void) {
 #if defined(BLUETOOTH_BLUEFRUIT_LE)
     bluefruit_le_init();
+#elif defined(BLUETOOTH_LKBT51)
+    lkbt51_init();
 #elif defined(BLUETOOTH_RN42)
     rn42_init();
 #endif
@@ -34,21 +38,49 @@ void bluetooth_init(void) {
 void bluetooth_task(void) {
 #if defined(BLUETOOTH_BLUEFRUIT_LE)
     bluefruit_le_task();
+#elif defined(BLUETOOTH_LKBT51)
+    lkbt51_task();
 #endif
 }
 
 bool bluetooth_is_connected(void) {
 #if defined(BLUETOOTH_BLUEFRUIT_LE)
     return bluefruit_le_is_connected();
+#elif defined(BLUETOOTH_LKBT51)
+    return lkbt51_is_connected();
 #else
     // TODO: drivers should check if BT is connected here
     return true;
 #endif
 }
 
+bool bluetooth_can_send_nkro(void) {
+#if defined(BLUETOOTH_LKBT51)
+    return lkbt51_can_send_nkro();
+#else
+    return false;
+#endif
+}
+
+uint8_t bluetooth_keyboard_leds(void) {
+#if defined(BLUETOOTH_LKBT51)
+    return lkbt51_keyboard_leds();
+#else
+    return 0;
+#endif
+}
+
+void bluetooth_send_nkro(report_nkro_t *report) {
+#if defined(BLUETOOTH_LKBT51)
+    lkbt51_send_nkro(report);
+#endif
+}
+
 void bluetooth_send_keyboard(report_keyboard_t *report) {
 #if defined(BLUETOOTH_BLUEFRUIT_LE)
     bluefruit_le_send_keyboard(report);
+#elif defined(BLUETOOTH_LKBT51)
+    lkbt51_send_keyboard(report);
 #elif defined(BLUETOOTH_RN42)
     rn42_send_keyboard(report);
 #endif
@@ -57,6 +89,8 @@ void bluetooth_send_keyboard(report_keyboard_t *report) {
 void bluetooth_send_mouse(report_mouse_t *report) {
 #if defined(BLUETOOTH_BLUEFRUIT_LE)
     bluefruit_le_send_mouse(report);
+#elif defined(BLUETOOTH_LKBT51)
+    lkbt51_send_mouse(report);
 #elif defined(BLUETOOTH_RN42)
     rn42_send_mouse(report);
 #endif
@@ -65,7 +99,15 @@ void bluetooth_send_mouse(report_mouse_t *report) {
 void bluetooth_send_consumer(uint16_t usage) {
 #if defined(BLUETOOTH_BLUEFRUIT_LE)
     bluefruit_le_send_consumer(usage);
+#elif defined(BLUETOOTH_LKBT51)
+    lkbt51_send_consumer(usage);
 #elif defined(BLUETOOTH_RN42)
     rn42_send_consumer(usage);
+#endif
+}
+
+void bluetooth_send_system(uint16_t usage) {
+#if defined(BLUETOOTH_LKBT51)
+    lkbt51_send_system(usage);
 #endif
 }
