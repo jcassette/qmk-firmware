@@ -40,19 +40,6 @@ bool dip_switch_update_kb(uint8_t index, bool active) {
     return true;
 }
 
-#if 0
-extern bool wakeup_from_lpm;
-
-void early_hardware_init_post(void)
-{
-    if (!wakeup_from_lpm)
-    {
-        gpio_set_pin_output_push_pull(LED_CAPS_LOCK_PIN);
-        gpio_write_pin(LED_CAPS_LOCK_PIN, !LED_PIN_ON_STATE);
-    }
-}
-#endif
-
 void keyboard_post_init_kb(void) {
 #ifdef LK_WIRELESS_ENABLE
     palSetLineMode(BT_MODE_SELECT_PIN, PAL_MODE_INPUT);
@@ -89,20 +76,13 @@ bool keychron_task_kb(void) {
         if (timer_elapsed32(power_on_indicator_timer) > POWER_ON_LED_DURATION) {
             power_on_indicator_timer = 0;
 
-            // if (!host_keyboard_led_state().caps_lock) gpio_write_pin(LED_CAPS_LOCK_PIN, !LED_PIN_ON_STATE);
 #ifdef LK_WIRELESS_ENABLE
             gpio_write_pin(BAT_LOW_LED_PIN, !BAT_LOW_LED_PIN_ON_STATE);
-            // for (uint8_t i = 0; i < sizeof(bt_led_pins) / sizeof(pin_t); i++)
-            //     gpio_write_pin(bt_led_pins[i], 1);
 #endif
 
         } else {
-            // gpio_write_pin(LED_CAPS_LOCK_PIN, LED_PIN_ON_STATE);
 #ifdef LK_WIRELESS_ENABLE
             gpio_write_pin(BAT_LOW_LED_PIN, BAT_LOW_LED_PIN_ON_STATE);
-            // if (get_transport() != TRANSPORT_P2P4)
-            //     for (uint8_t i = 0; i < sizeof(bt_led_pins) / sizeof(pin_t); i++)
-            //         gpio_write_pin(bt_led_pins[i], 0);
 #endif
         }
     }
