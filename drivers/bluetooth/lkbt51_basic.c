@@ -154,15 +154,6 @@ static void ddump(void const *ptr, uint8_t len) {
 #endif
 }
 
-static void lkbt51_wake(void) {
-    dprintf("%s\n", __func__);
-
-    gpio_write_pin_low(LKBT51_INT_OUTPUT_PIN);
-    wait_ms(10);
-    gpio_write_pin_high(LKBT51_INT_OUTPUT_PIN);
-    wait_ms(300);
-}
-
 static void lkbt51_transmit(enum lkbt51_cmd command, void const *data, uint8_t len, bool request_ack) {
     static uint8_t sequence_count = 1;
 
@@ -190,6 +181,11 @@ static void lkbt51_transmit(enum lkbt51_cmd command, void const *data, uint8_t l
         ddump(payload, len);
     }
     ddump(trailer, sizeof(trailer));
+
+    gpio_write_pin_low(LKBT51_INT_OUTPUT_PIN);
+    wait_ms(1);
+    gpio_write_pin_high(LKBT51_INT_OUTPUT_PIN);
+    wait_ms(1);
 
     spi_start(LKBT51_INT_OUTPUT_PIN, false, LKBT51_SPI_MODE, LKBT51_SPI_DIVISOR);
     spi_transmit(header, sizeof(header));
@@ -289,7 +285,6 @@ void lkbt51_pair(void) {
         0, // bluetooth classic (not BLE)
         0 // default TX power
     };
-    lkbt51_wake();
     lkbt51_transmit(LKBT51_CMD_PAIRING, payload, sizeof(payload), true);
 }
 
@@ -300,7 +295,6 @@ void lkbt51_connect(void) {
         lkbt51_profile,
         0, 0 // default timeout
     };
-    lkbt51_wake();
     lkbt51_transmit(LKBT51_CMD_CONNECT, payload, sizeof(payload), true);
 }
 
