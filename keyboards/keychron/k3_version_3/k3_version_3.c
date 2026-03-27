@@ -16,8 +16,8 @@
 
 #include "quantum.h"
 #include "config.h"
-#include "keychron_task.h"
 #ifdef LK_WIRELESS_ENABLE
+#    include "keychron_task.h"
 #    include "lkbt51.h"
 #    include "wireless.h"
 #    include "keychron_wireless_common.h"
@@ -75,19 +75,19 @@ bool keychron_task_kb(void) {
     if (power_on_indicator_timer) {
         if (timer_elapsed32(power_on_indicator_timer) > POWER_ON_LED_DURATION) {
             power_on_indicator_timer = 0;
-
-#ifdef LK_WIRELESS_ENABLE
             gpio_write_pin(BAT_LOW_LED_PIN, !BAT_LOW_LED_PIN_ON_STATE);
-#endif
-
         } else {
-#ifdef LK_WIRELESS_ENABLE
             gpio_write_pin(BAT_LOW_LED_PIN, BAT_LOW_LED_PIN_ON_STATE);
-#endif
         }
     }
     return true;
 }
+
+#if 1
+void housekeeping_task_kb() {
+    keychron_task_kb();
+}
+#endif
 
 #ifdef LK_WIRELESS_ENABLE
 bool lpm_is_kb_idle(void) {

@@ -59,7 +59,7 @@
 #    endif
 #endif
 
-#ifdef LK_WIRELESS_ENABLE
+#if 1
 /* Hardware configuration */
 #    define BT_MODE_SELECT_PIN A10
 
