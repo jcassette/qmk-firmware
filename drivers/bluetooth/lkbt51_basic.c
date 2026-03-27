@@ -146,10 +146,11 @@ static void ddump(void const *ptr, uint8_t len) {
     }
     for (uint8_t i = 0; i < len; i++) {
         uint8_t b = buf[i];
-        putchar(' ');
-        putchar(digits[b >> 4]);
-        putchar(digits[b & 0xF]);
+        sendchar(digits[b >> 4]);
+        sendchar(digits[b & 0xF]);
+        sendchar(' ');
     }
+    sendchar('\n');
 #endif
 }
 
@@ -184,13 +185,11 @@ static void lkbt51_transmit(enum lkbt51_cmd command, void const *data, uint8_t l
 
     uint8_t trailer[] = {checksum & 0xFF, checksum >> 8};
 
-    dprintf(__func__);
     ddump(header, sizeof(header));
     if (payload && len) {
         ddump(payload, len);
     }
     ddump(trailer, sizeof(trailer));
-    dprintf("\n");
 
     spi_start(LKBT51_INT_OUTPUT_PIN, false, LKBT51_SPI_MODE, LKBT51_SPI_DIVISOR);
     spi_transmit(header, sizeof(header));
@@ -217,9 +216,7 @@ static void lkbt51_receive(uint8_t *buf, uint8_t len) {
     spi_receive(buf, len);
     spi_stop();
 
-    dprintf(__func__);
     ddump(buf, len);
-    dprintf("\n");
 }
 
 static void lkbt51_configure(void) {
@@ -263,7 +260,7 @@ static void lkbt51_process_status(uint8_t const *buf) {
     }
 
     if (status_bits & LKBT51_MSK_BATT) {
-        dprintf("%s: batt", __func__);
+        dprintf("%s: batt\n", __func__);
     }
 
     if (status_bits & LKBT51_MSK_RESET) {
