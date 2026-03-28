@@ -10,10 +10,10 @@
     },
     "features": {
         "bootmagic": true,
-        "extrakey": true,
-        "mousekey": true,
+        "extrakey": false, //true,
+        "mousekey": false, //true,
         "dip_switch": true,
-        "nkro": true,
+        "nkro": false, //true,
         "raw": true,
         "sendstring": true
     },
