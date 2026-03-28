@@ -31,7 +31,7 @@
 #define EXTERNAL_EEPROM_I2C_BASE_ADDRESS 0b10100010
 #define DYNAMIC_KEYMAP_BUFFER_ENABLE
 
-#if defined(RGB_MATRIX_ENABLE) || defined(LED_MATRIX_ENABLE) || defined(LK_WIRELESS_ENABLE)
+#if defined(RGB_MATRIX_ENABLE) || defined(LED_MATRIX_ENABLE) || defined(BLUETOOTH_ENABLE)
 /* SPI configuration */
 #    define SPI_DRIVER SPIDQ
 #    define SPI_SCK_PIN A5

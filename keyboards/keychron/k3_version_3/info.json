@@ -9,6 +9,7 @@
         "vid": "0x3434"
     },
     "features": {
+        "bluetooth": true,
         "bootmagic": true,
         "extrakey": false, //true,
         "mousekey": false, //true,
@@ -16,6 +17,9 @@
         "nkro": false, //true,
         "raw": true,
         "sendstring": true
+    },
+    "bluetooth": {
+        "driver": "lkbt51"
     },
     "diode_direction": "ROW2COL",
     "dip_switch" :{

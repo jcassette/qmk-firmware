@@ -16,11 +16,12 @@
 
 #include "quantum.h"
 #include "config.h"
+#ifdef BLUETOOTH_ENABLE
+#    include "connection.h"
+#    include "lkbt51.h"
+#endif
 #ifdef LK_WIRELESS_ENABLE
 #    include "keychron_task.h"
-#    include "lkbt51.h"
-#    include "wireless.h"
-#    include "keychron_wireless_common.h"
 #endif
 
 #define POWER_ON_LED_DURATION 3000
@@ -41,20 +42,13 @@ bool dip_switch_update_kb(uint8_t index, bool active) {
 }
 
 void keyboard_post_init_kb(void) {
-#ifdef LK_WIRELESS_ENABLE
-    palSetLineMode(BT_MODE_SELECT_PIN, PAL_MODE_INPUT);
-#    ifdef P2P4_MODE_SELECT_PIN
-    palSetLineMode(P2P4_MODE_SELECT_PIN, PAL_MODE_INPUT);
-#    elif defined(USB_MODE_SELECT_PIN)
-    palSetLineMode(USB_MODE_SELECT_PIN, PAL_MODE_INPUT);
-#    endif
-
+#ifdef BLUETOOTH_ENABLE
+    gpio_set_pin_input(BT_MODE_SELECT_PIN);
     gpio_write_pin(BAT_LOW_LED_PIN, BAT_LOW_LED_PIN_ON_STATE);
-    lkbt51_init(false);
-    wireless_init();
 #endif
 
     power_on_indicator_timer = timer_read32();
+
 #ifdef ENCODER_ENABLE
     encoder_cb_init();
 #endif
@@ -80,6 +74,15 @@ bool keychron_task_kb(void) {
             gpio_write_pin(BAT_LOW_LED_PIN, BAT_LOW_LED_PIN_ON_STATE);
         }
     }
+
+#ifdef BLUETOOTH_ENABLE
+    if (gpio_read_pin(BT_MODE_SELECT_PIN) == 0) {
+        connection_set_host_noeeprom(CONNECTION_HOST_BLUETOOTH);
+    } else {
+        connection_set_host_noeeprom(CONNECTION_HOST_USB);
+    }
+#endif
+
     return true;
 }
 
@@ -94,3 +97,36 @@ bool lpm_is_kb_idle(void) {
     return power_on_indicator_timer == 0;
 }
 #endif
+
+#ifdef BLUETOOTH_ENABLE
+void connection_host_changed_kb(connection_host_t host) {
+    switch (host) {
+        case CONNECTION_HOST_USB:
+            lkbt51_disconnect();
+            break;
+        case CONNECTION_HOST_BLUETOOTH:
+            lkbt51_connect();
+            break;
+        default:
+            // nothing
+            break;
+    }
+}
+#endif
+
+bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
+    if (!process_record_user(keycode, record)) { return false; }
+
+    switch (keycode) {
+#ifdef BLUETOOTH_ENABLE
+        case BT_PRF1 ... BT_PRF3:
+            if (record->event.pressed && connection_get_host() == CONNECTION_HOST_BLUETOOTH) {
+                lkbt51_select_profile(keycode - BT_PRF1 + 1);
+                lkbt51_connect();
+            }
+            return false;
+#endif
+    }
+
+    return true;
+}
