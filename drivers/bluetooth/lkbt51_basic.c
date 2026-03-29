@@ -332,6 +332,8 @@ void lkbt51_select_profile(uint8_t profile) {
 // BLUETOOTH DRIVER INTERFACE
 
 void lkbt51_init(void) {
+    spi_init();
+
     gpio_set_pin_output_push_pull(LKBT51_INT_OUTPUT_PIN);
     gpio_write_pin_high(LKBT51_INT_OUTPUT_PIN);
 
