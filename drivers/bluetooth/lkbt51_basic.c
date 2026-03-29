@@ -25,6 +25,8 @@
 #    error "LKBT51_INT_OUTPUT_PIN is not defined"
 #endif
 
+#define LKBT51_TIMEOUT 3000
+
 #define LKBT51_SPI_MODE 0
 #define LKBT51_SPI_DIVISOR 32
 
@@ -148,6 +150,22 @@ static void ddump(void const *ptr, uint8_t len) {
 #endif
 }
 
+static void lkbt51_wake(void) {
+    static uint32_t last_wake_time = 0;
+
+    dprintf("%s\n", __func__);
+
+    if (timer_elapsed32(last_wake_time) > LKBT51_TIMEOUT) {
+        dprintf("%s: do wake\n", __func__);
+        /* The module needs a long time to wake up from SLEEPING mode. */
+        gpio_write_pin_low(LKBT51_INT_OUTPUT_PIN);
+        wait_ms(10);
+        gpio_write_pin_high(LKBT51_INT_OUTPUT_PIN);
+        wait_ms(300);
+        last_wake_time = timer_read32();
+    }
+}
+
 static void lkbt51_transmit(enum lkbt51_cmd command, void const *data, uint8_t len, bool request_ack) {
     static uint8_t sequence_count = 1;
 
@@ -179,12 +197,8 @@ static void lkbt51_transmit(enum lkbt51_cmd command, void const *data, uint8_t l
     }
     ddump(trailer, sizeof(trailer));
 
-    gpio_write_pin_low(LKBT51_INT_OUTPUT_PIN);
-    wait_ms(1);
-    gpio_write_pin_high(LKBT51_INT_OUTPUT_PIN);
-    wait_ms(1);
-
     spi_start(LKBT51_INT_OUTPUT_PIN, false, LKBT51_SPI_MODE, LKBT51_SPI_DIVISOR);
+    wait_ms(1); /* After a timeout, the module needs a little delay to receive again. */
     spi_transmit(header, sizeof(header));
     if (payload && len) {
         spi_transmit(payload, len);
@@ -290,6 +304,7 @@ void lkbt51_pair(void) {
     };
     // clang-format on
 
+    lkbt51_wake();
     lkbt51_transmit(LKBT51_CMD_PAIRING, payload, sizeof(payload), true);
 }
 
@@ -303,6 +318,7 @@ void lkbt51_connect(void) {
     };
     // clang-format on
 
+    lkbt51_wake();
     lkbt51_transmit(LKBT51_CMD_CONNECT, payload, sizeof(payload), true);
 }
 
