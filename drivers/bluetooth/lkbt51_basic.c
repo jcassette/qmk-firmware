@@ -324,9 +324,6 @@ void lkbt51_select_profile(uint8_t profile) {
     }
     if (profile != lkbt51_profile) {
         lkbt51_profile = profile;
-        if (lkbt51_conn == LKBT51_CONN_CONNECTED) {
-            lkbt51_connect();
-        }
     }
 }
 

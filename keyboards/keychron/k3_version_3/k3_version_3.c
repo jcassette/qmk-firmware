@@ -27,6 +27,9 @@
 #define POWER_ON_LED_DURATION 3000
 static uint32_t power_on_indicator_timer;
 
+#define PAIRING_KEY_DURATION 2000
+static uint32_t pairing_key_timer;
+
 #ifdef BT_INDICATION_LED_PIN_LIST
 pin_t bt_led_pins[] = BT_INDICATION_LED_PIN_LIST;
 #endif
@@ -120,9 +123,18 @@ bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
 #ifdef BLUETOOTH_ENABLE
         case BT_PRF1 ... BT_PRF3:
-            if (record->event.pressed && connection_get_host() == CONNECTION_HOST_BLUETOOTH) {
+            if (connection_get_host() != CONNECTION_HOST_BLUETOOTH) {
+                return false;
+            }
+            if (record->event.pressed) {
                 lkbt51_select_profile(keycode - BT_PRF1 + 1);
-                lkbt51_connect();
+                pairing_key_timer = timer_read32();
+            } else {
+                if (timer_elapsed32(pairing_key_timer) < PAIRING_KEY_DURATION) {
+                    lkbt51_connect();
+                } else {
+                    lkbt51_pair();
+                }
             }
             return false;
 #endif
