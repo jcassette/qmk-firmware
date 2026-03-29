@@ -283,8 +283,8 @@ void lkbt51_pair(void) {
     uint8_t payload[] = {
         lkbt51_profile,
         0, 0, // default timeout
-        0, // default pairing mode
-        0, // bluetooth classic (not BLE)
+        3, // pairing mode LESC or SSP
+        1, // bluetooth classic (not BLE)
         0 // default TX power
     };
     // clang-format on
