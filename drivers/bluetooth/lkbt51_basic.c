@@ -215,7 +215,7 @@ static void lkbt51_receive(uint8_t *buf, uint8_t len) {
 static void lkbt51_configure(void) {
     dprintf("%s\n", __func__);
 
-    char name[] = PRODUCT;
+    char const *name = PRODUCT;
 
     // clang-format off
     lkbt51_config_t config = {
@@ -231,7 +231,8 @@ static void lkbt51_configure(void) {
     };
     // clang-format on
 
-    lkbt51_transmit(LKBT51_CMD_SET_NAME, name, sizeof(name), false);
+    lkbt51_transmit(LKBT51_CMD_SET_NAME, name, strlen(name), false);
+    wait_ms(3);
     lkbt51_transmit(LKBT51_CMD_SET_CONFIG, &config, sizeof(config), false);
 }
 
