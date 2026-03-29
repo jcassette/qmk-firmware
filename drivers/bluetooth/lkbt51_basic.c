@@ -17,13 +17,12 @@
 #include "quantum.h"
 #include "spi_master.h"
 
-
 #ifndef LKBT51_INT_INPUT_PIN
-#error "LKBT51_INT_INPUT_PIN is not defined"
+#    error "LKBT51_INT_INPUT_PIN is not defined"
 #endif
 
 #ifndef LKBT51_INT_OUTPUT_PIN
-#error "LKBT51_INT_OUTPUT_PIN is not defined"
+#    error "LKBT51_INT_OUTPUT_PIN is not defined"
 #endif
 
 #define LKBT51_SPI_MODE 0
@@ -62,23 +61,23 @@ enum lkbt51_cmd {
 };
 
 enum lkbt51_evt {
-    LKBT51_EVT_ACK           = 0xA1,
-    LKBT51_EVT_RESET         = 0xB0,
-    LKBT51_EVT_LE_CONNECTION = 0xB1,
-    LKBT51_EVT_HOST_TYPE     = 0xB2,
-    LKBT51_EVT_CONNECTION    = 0xB3,
-    LKBT51_EVT_HID_EVENT     = 0xB4,
-    LKBT51_EVT_BATTERY       = 0xB5,
+    LKBT51_EVT_ACK              = 0xA1,
+    LKBT51_EVT_RESET            = 0xB0,
+    LKBT51_EVT_LE_CONNECTION    = 0xB1,
+    LKBT51_EVT_HOST_TYPE        = 0xB2,
+    LKBT51_EVT_CONNECTION       = 0xB3,
+    LKBT51_EVT_HID_EVENT        = 0xB4,
+    LKBT51_EVT_BATTERY          = 0xB5,
 };
 
 enum lkbt51_conn {
-    LKBT51_CONN_CONNECTED = 0x20,
-    LKBT51_CONN_PAIRING = 0x21,
-    LKBT51_CONN_RECONNECTING = 0x22,
-    LKBT51_CONN_DISCONNECTED = 0x23,
-    LKBT51_CONN_PINCODE_ENTER = 0x24,
-    LKBT51_CONN_PINCODE_EXIT = 0x25,
-    LKBT51_CONN_SLEEPING = 0x26
+    LKBT51_CONN_CONNECTED       = 0x20,
+    LKBT51_CONN_PAIRING         = 0x21,
+    LKBT51_CONN_RECONNECTING    = 0x22,
+    LKBT51_CONN_DISCONNECTED    = 0x23,
+    LKBT51_CONN_PINCODE_ENTER   = 0x24,
+    LKBT51_CONN_PINCODE_EXIT    = 0x25,
+    LKBT51_CONN_SLEEPING        = 0x26
 };
 
 enum lkbt51_ack {
@@ -87,24 +86,16 @@ enum lkbt51_ack {
     LKBT51_ACK_FIFO_HALF_WARNING,
     LKBT51_ACK_FIFO_FULL_ERROR,
 };
-// clang-format on
 
-// some kind of status report always present at start of reply
 #define LKBT51_MSK_CONNECTION   0x01
 #define LKBT51_MSK_LED          0x02
 #define LKBT51_MSK_BATT         0x04
 #define LKBT51_MSK_RESET        0x08
 #define LKBT51_MSK_RPT_INTERVAL 0x10
 #define LKBT51_MSK_MD           0x80
-
+// clang-format on
 
 // INTERNAL TYPES
-
-// typedef struct {
-//     enum lkbt51_state state;
-//     uint8_t leds;
-//     uint8_t delay;
-// } lkbt51_status_t;
 
 typedef struct __attribute__((packed)) {
     uint8_t  event_mode; /* Must be 0x02 */
@@ -124,13 +115,13 @@ typedef struct __attribute__((packed)) {
     uint16_t le_connection_interval_timeout;
 } lkbt51_config_t;
 
-
 // INTERNAL DATA
 
 static enum lkbt51_conn lkbt51_conn = 0;
-static uint8_t lkbt51_profile = 1;
-static uint8_t lkbt51_leds = 0;
 
+static uint8_t lkbt51_profile = 1;
+
+static uint8_t lkbt51_leds = 0;
 
 // INTERNAL FUNCTIONS
 
@@ -140,10 +131,13 @@ static void ddump(void const *ptr, uint8_t len) {
     (void)len;
 #else
     static const char digits[] = "0123456789ABCDEF";
+
     uint8_t const *buf = ptr;
+
     if (!debug_config.enable) {
         return;
     }
+
     for (uint8_t i = 0; i < len; i++) {
         uint8_t b = buf[i];
         sendchar(digits[b >> 4]);
@@ -160,6 +154,8 @@ static void lkbt51_transmit(enum lkbt51_cmd command, void const *data, uint8_t l
     dprintf("%s\n", __func__);
 
     uint8_t *payload = (uint8_t *)(data);
+
+    // clang-format off
     uint8_t header[] = {
         0x84, 0x7E, 0x00, 0x00, 0xAA,
         request_ack ? 0x56 : 0x55,
@@ -168,6 +164,7 @@ static void lkbt51_transmit(enum lkbt51_cmd command, void const *data, uint8_t l
         sequence_count,
         command
     };
+    // clang-format on
 
     uint16_t checksum = command;
     for (uint8_t i = 0; i < len; i++) {
@@ -219,6 +216,8 @@ static void lkbt51_configure(void) {
     dprintf("%s\n", __func__);
 
     char name[] = PRODUCT;
+
+    // clang-format off
     lkbt51_config_t config = {
         .event_mode             = 0x02,
         .connected_idle_timeout = 7200,
@@ -230,6 +229,8 @@ static void lkbt51_configure(void) {
         .vendor_id              = VENDOR_ID,
         .product_id             = PRODUCT_ID
     };
+    // clang-format on
+
     lkbt51_transmit(LKBT51_CMD_SET_NAME, name, sizeof(name), false);
     lkbt51_transmit(LKBT51_CMD_SET_CONFIG, &config, sizeof(config), false);
 }
@@ -269,7 +270,7 @@ static void lkbt51_process_status(uint8_t const *buf) {
     }
 
     if (status_bits & LKBT51_MSK_MD) {
-        //dprintf("%s: md\n", __func__);
+        // dprintf("%s: md\n", __func__);
     }
 }
 
@@ -278,6 +279,7 @@ static void lkbt51_process_status(uint8_t const *buf) {
 void lkbt51_pair(void) {
     dprintf("%s\n", __func__);
 
+    // clang-format off
     uint8_t payload[] = {
         lkbt51_profile,
         0, 0, // default timeout
@@ -285,16 +287,21 @@ void lkbt51_pair(void) {
         0, // bluetooth classic (not BLE)
         0 // default TX power
     };
+    // clang-format on
+
     lkbt51_transmit(LKBT51_CMD_PAIRING, payload, sizeof(payload), true);
 }
 
 void lkbt51_connect(void) {
     dprintf("%s\n", __func__);
 
+    // clang-format off
     uint8_t payload[] = {
         lkbt51_profile,
         0, 0 // default timeout
     };
+    // clang-format on
+
     lkbt51_transmit(LKBT51_CMD_CONNECT, payload, sizeof(payload), true);
 }
 
@@ -321,7 +328,6 @@ void lkbt51_select_profile(uint8_t profile) {
         }
     }
 }
-
 
 // BLUETOOTH DRIVER INTERFACE
 
@@ -373,6 +379,7 @@ void lkbt51_send_nkro(report_nkro_t const *report) {
 void lkbt51_send_mouse(report_mouse_t const *report) {
     dprintf("%s\n", __func__);
 
+    // clang-format off
     uint8_t payload[] = {
         report->buttons,
         (int16_t)report->x & 0xFF,
@@ -382,6 +389,8 @@ void lkbt51_send_mouse(report_mouse_t const *report) {
         report->v,
         report->h
     };
+    // clang-format on
+
     lkbt51_transmit(LKBT51_CMD_SEND_MOUSE, payload, sizeof(payload), false);
 }
 
@@ -396,10 +405,10 @@ void lkbt51_send_system(uint16_t usage) {
     dprintf("%s\n", __func__);
 
     if (SYSTEM_POWER_DOWN <= usage && usage <= SYSTEM_WAKE_UP) {
-        uint8_t bit = usage - SYSTEM_POWER_DOWN;
+        uint8_t bit     = usage - SYSTEM_POWER_DOWN;
         uint8_t payload = 1 << bit;
         lkbt51_transmit(LKBT51_CMD_SEND_SYSTEM, &payload, sizeof(payload), false);
     }
 }
 
-//void lkbt51_send_raw_hid(uint8_t *data, uint8_t length) {}
+// void lkbt51_send_raw_hid(uint8_t *data, uint8_t length) {}
