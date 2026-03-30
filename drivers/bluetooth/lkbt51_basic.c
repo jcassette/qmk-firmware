@@ -39,38 +39,33 @@
 
 // clang-format off
 enum lkbt51_cmd {
-    /* HID Report  */
-    LKBT51_CMD_SEND_KB       = 0x11,
-    LKBT51_CMD_SEND_NKRO     = 0x12,
-    LKBT51_CMD_SEND_CONSUMER = 0x13,
-    LKBT51_CMD_SEND_SYSTEM   = 0x14,
-    LKBT51_CMD_SEND_MOUSE    = 0x16,
-    /* Bluetooth connections */
-    LKBT51_CMD_PAIRING        = 0x21,
-    LKBT51_CMD_CONNECT        = 0x22,
-    LKBT51_CMD_DISCONNECT     = 0x23,
-    LKBT51_CMD_SWITCH_HOST    = 0x24,
-    LKBT51_CMD_READ_STATE_REG = 0x25,
+    /* HID reports */
+    LKBT51_CMD_SEND_KB          = 0x11,
+    LKBT51_CMD_SEND_NKRO        = 0x12,
+    LKBT51_CMD_SEND_CONSUMER    = 0x13,
+    LKBT51_CMD_SEND_SYSTEM      = 0x14,
+    LKBT51_CMD_SEND_MOUSE       = 0x16,
+    /* Bluetooth connection */
+    LKBT51_CMD_PAIRING          = 0x21,
+    LKBT51_CMD_CONNECT          = 0x22,
+    LKBT51_CMD_DISCONNECT       = 0x23,
+    LKBT51_CMD_READ_STATE_REG   = 0x25,
     /* Battery */
-    LKBT51_CMD_BATTERY_MANAGE = 0x31,
-    LKBT51_CMD_UPDATE_BAT_LVL = 0x32,
-    LKBT51_CMD_UPDATE_BAT_STATE = 0x33,
-    /* Set/get parameters */
-    LKBT51_CMD_SET_CONFIG      = 0x41,
-    LKBT51_CMD_SET_NAME        = 0x45,
+    LKBT51_CMD_SEND_BAT_LEVEL   = 0x32,
+    LKBT51_CMD_SEND_BAT_STATE   = 0x33,
+    /* Module configuration */
+    LKBT51_CMD_SET_CONFIG       = 0x41,
+    LKBT51_CMD_SET_NAME         = 0x45,
     /* Event */
-    LKBT51_CMD_ACK_CONNECTION  = 0xA4,
+    LKBT51_CMD_ACK_CONNECTION   = 0xA4,
 };
 
-enum lkbt51_evt {
-    LKBT51_EVT_ACK              = 0xA1,
-    LKBT51_EVT_RESET            = 0xB0,
-    LKBT51_EVT_LE_CONNECTION    = 0xB1,
-    LKBT51_EVT_HOST_TYPE        = 0xB2,
-    LKBT51_EVT_CONNECTION       = 0xB3,
-    LKBT51_EVT_HID_EVENT        = 0xB4,
-    LKBT51_EVT_BATTERY          = 0xB5,
-};
+#define LKBT51_MSK_CONNECTION   0x01
+#define LKBT51_MSK_LED          0x02
+#define LKBT51_MSK_BATT         0x04
+#define LKBT51_MSK_RESET        0x08
+#define LKBT51_MSK_RPT_INTERVAL 0x10
+#define LKBT51_MSK_MD           0x80
 
 enum lkbt51_conn {
     LKBT51_CONN_CONNECTED       = 0x20,
@@ -81,20 +76,6 @@ enum lkbt51_conn {
     LKBT51_CONN_PINCODE_EXIT    = 0x25,
     LKBT51_CONN_SLEEPING        = 0x26
 };
-
-enum lkbt51_ack {
-    LKBT51_ACK_SUCCESS = 0x00,
-    LKBT51_ACK_CHECKSUM_ERROR,
-    LKBT51_ACK_FIFO_HALF_WARNING,
-    LKBT51_ACK_FIFO_FULL_ERROR,
-};
-
-#define LKBT51_MSK_CONNECTION   0x01
-#define LKBT51_MSK_LED          0x02
-#define LKBT51_MSK_BATT         0x04
-#define LKBT51_MSK_RESET        0x08
-#define LKBT51_MSK_RPT_INTERVAL 0x10
-#define LKBT51_MSK_MD           0x80
 // clang-format on
 
 // INTERNAL TYPES
@@ -338,9 +319,7 @@ void lkbt51_select_profile(uint8_t profile) {
         dprintf("%s: invalid argument\n", __func__);
         return;
     }
-    if (profile != lkbt51_profile) {
-        lkbt51_profile = profile;
-    }
+    lkbt51_profile = profile;
 }
 
 // BLUETOOTH DRIVER INTERFACE
@@ -426,5 +405,3 @@ void lkbt51_send_system(uint16_t usage) {
         lkbt51_transmit(LKBT51_CMD_SEND_SYSTEM, &payload, sizeof(payload), false);
     }
 }
-
-// void lkbt51_send_raw_hid(uint8_t *data, uint8_t length) {}
